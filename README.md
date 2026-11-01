@@ -12,7 +12,7 @@
 - [Paw Patrol Members](#paw-patrol-members)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Database Design (ERD)](#database-design-(erd))
+- [Database Design (ERD)](#database-design-erd)
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
 - [Screenshots](#screenshots)
