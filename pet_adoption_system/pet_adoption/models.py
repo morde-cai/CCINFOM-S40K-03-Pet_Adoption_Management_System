@@ -50,6 +50,9 @@ class Species(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
 
+    class Meta:
+        verbose_name_plural = "species"
+
     def __str__(self):
         return self.name
 
@@ -113,7 +116,10 @@ class Staff(models.Model):
         Shelter, on_delete=models.PROTECT, related_name="staff_members"
     )
     hire_date = models.DateField()
- 
+
+    class Meta:
+        verbose_name_plural = "staff"
+        
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
