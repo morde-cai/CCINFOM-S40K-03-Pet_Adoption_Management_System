@@ -154,7 +154,7 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 7. (Optional) Load sample data
+### `TODO` 7. (Optional) Load sample data 
 
 ```bash
 python manage.py loaddata [fixture_file].json
