@@ -20,10 +20,10 @@
 
 ## Paw Patrol Members
 
-**Section & Group Number:** S40K - 03
-**School:** De La Salle University Manila 
-**Course:** CCINFOM | A.Y. 2026 - 2027 Term 1
-**Instructor:** Dr. Payawal, Bryan O’Nomerp
+**Section & Group Number:** S40K - 03  
+**School:** De La Salle University Manila  
+**Course:** CCINFOM | A.Y. 2026 - 2027 Term 1  
+**Instructor:** Dr. Payawal, Bryan O’Nomerp  
 
 | Name | Role / Contribution |
 |------|---------------------|
