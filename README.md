@@ -16,6 +16,7 @@
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
 - [Screenshots](#screenshots)
+- [References](#references)
 
 
 ## Paw Patrol Members
@@ -182,3 +183,8 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser or whateve
 
 ## Screenshots
 `TODO`
+
+
+## References
+- *AmaneKai/CCINFOM-DBAPP-SAMPLE. (n.d.). https://github.com/AmaneKai/CCINFOM-DBAPP-SAMPLE*
+- *Django documentation | Django documentation. (n.d.). Django Project. https://docs.djangoproject.com/en/6.1/*
