@@ -2,8 +2,9 @@
 README_template.md
 README_staff_template.md
 
-# Py venv
+# Other Files"
 venv/
+migrations/
 __pycache__/
 *.pyc
 db.sqlite3
