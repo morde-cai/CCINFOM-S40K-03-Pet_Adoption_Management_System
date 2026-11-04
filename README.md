@@ -186,5 +186,5 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser or whateve
 
 
 ## References
-- *AmaneKai/CCINFOM-DBAPP-SAMPLE. (n.d.). https://github.com/AmaneKai/CCINFOM-DBAPP-SAMPLE*
-- *Django documentation | Django documentation. (n.d.). Django Project. https://docs.djangoproject.com/en/6.1/*
+- *AmaneKai (n.d.). CCINFOM-DBAPP-SAMPLE. https://github.com/AmaneKai/CCINFOM-DBAPP-SAMPLE*
+- *Django (n.d.). Django documentation. Django Project. https://docs.djangoproject.com/en/6.1/*
