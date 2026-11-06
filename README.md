@@ -62,8 +62,8 @@ Managed records:
 
 | Layer                 | Technology                     | 
 |-----------------------|--------------------------------|
-| Language              | Python 3                       |  
-| Web Framework         | Django 6                       |
+| Language              | Python 3.10+                   |  
+| Web Framework         | Django 6.0                     |
 | Database              | MySQL 8.4+                     |
 | Charts                | Chart.js                       |
 | Records Management UI | Django Admin                   |
