@@ -69,13 +69,13 @@ def dashboard(request):
     kpis = [
         {"label": "Available for adoption", "value": in_shelter, "icon": "paw.svg",
          "sub": f"{with_open_request} with an open request"},
-        {"label": "Taken in this month", "value": intake["month"], "icon": "download.svg",
+        {"label": "Taken in this month", "value": intake["month"], "icon": "box-open.svg",
          "sub": f"{intake['year']} so far in {today.year}"},
-        {"label": "Adopted this month", "value": adoptions["month"], "icon": "file.svg",
+        {"label": "Adopted this month", "value": adoptions["month"], "icon": "gift.svg",
          "sub": f"{adoptions['year']} so far in {today.year}"},
         {"label": "Pending requests", "value": adoptions["pending"], "icon": "calendar.svg",
          "sub": "Waiting for a decision"},
-        {"label": "Shelter occupancy", "value": f"{in_shelter} / {capacity}", "icon": "dashboard.svg",
+        {"label": "Shelter occupancy", "value": f"{in_shelter} / {capacity}", "icon": "shelter.svg",
          "sub": f"{round(in_shelter / capacity * 100) if capacity else 0}% full"},
         {"label": "Active staff", "value": active_staff, "icon": "staffs.svg", "sub": "Currently working"},
     ]
