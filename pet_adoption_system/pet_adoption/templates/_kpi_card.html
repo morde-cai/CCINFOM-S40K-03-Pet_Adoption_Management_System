@@ -1,0 +1,10 @@
+{# One KPI card. Expects `kpi` with label, value, sub and icon (a file name in static/images/icons/). #}
+{% load static %}
+<div class="page-card p-3 h-100 d-flex align-items-center gap-3">
+    <div class="kpi-icon"><img class="nav-icon" src="{% static 'images/icons/'|add:kpi.icon %}" alt="" width="20" height="20"></div>
+    <div>
+        <div class="small text-body-secondary">{{ kpi.label }}</div>
+        <div class="kpi-value">{{ kpi.value }}</div>
+        {% if kpi.sub %}<div class="small text-body-secondary">{{ kpi.sub }}</div>{% endif %}
+    </div>
+</div>
