@@ -5,11 +5,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Pet Adoption{% endblock %}</title>
+    <title>{% block title %} Paws Adoption {% endblock %}</title>
 
     <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/icons/favicon.svg' %}">
     <script src="{% static 'js/custom.js' %}"></script>
     {% block extra_head %}{% endblock %}
 </head>
