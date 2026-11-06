@@ -1,0 +1,255 @@
+/* System Font Stack */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  background-color: var(--bs-body-bg, #ffffff);
+  color: var(--bs-body-color, #0f3d3a);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Shared height: the sidebar brand block and the top bar always match */
+:root {
+  --header-height: 5.5rem;
+}
+
+/* Light theme (also the default) global variables */
+:root, [data-bs-theme="light"] {
+  /* Brand palette */
+  --brand-900: #0f3d3a;
+  --brand-700: #0f5a55;
+  --brand-600: #14706a;
+  --brand-100: #ddf3f1;
+  --brand-50:  #f2faf9;
+
+  /* Bootstrap overrides */
+  --bs-primary: #14706a;
+  --bs-primary-rgb: 20, 112, 106;
+  --bs-body-bg: #ffffff;
+  --bs-body-color: #0f3d3a;
+  --bs-link-color: #14706a;
+  --bs-link-hover-color: #0f5a55;
+  --bs-border-color: #ddf3f1;
+
+  /* Your layout variables */
+  --sidebar-bg: #f2faf9;
+  --sidebar-border: #ddf3f1;
+  --nav-text: #5e7270;
+  --nav-hover-bg: #ddf3f1;
+  --nav-active-bg: #ffffff;
+  --nav-active-text: #14706a;
+  --nav-active-shadow: 0 4px 12px rgba(15, 61, 58, 0.08);
+  --brand-icon-bg: #0f3d3a;
+  --brand-icon-color: #ffffff;
+  --account-bg: #ddf3f1;
+  --brand-icon-filter: invert(1);
+  --nav-icon-filter: none;
+}
+
+/* Dark theme global variables */
+[data-bs-theme="dark"] {
+  /* Brand palette (light teals so they read on dark grey) */
+  --brand-900: #e6f4f3;
+  --brand-700: #5cc4bb;
+  --brand-600: #3aaaa0;
+  --brand-100: #272b30;
+  --brand-50:  #1f2326;
+
+  /* Bootstrap overrides */
+  --bs-primary: #3aaaa0;
+  --bs-primary-rgb: 58, 170, 160;
+  --bs-body-bg: #1a1d1f;
+  --bs-body-color: #e8eaed;
+  --bs-link-color: #5cc4bb;
+  --bs-link-hover-color: #8fd3cd;
+  --bs-border-color: #272b30;
+
+  /* Your layout variables (original greys) */
+  --sidebar-bg: #1a1d1f;
+  --sidebar-border: #272b30;
+  --nav-text: #6f767e;
+  --nav-hover-bg: #272b30;
+  --nav-active-bg: #232d2e;      /* grey with a hint of teal */
+  --nav-active-text: #7fd6cd;
+  --nav-active-shadow: 0 4px 12px rgba(5, 4, 4, 0.25);
+  --brand-icon-bg: #ffffff;
+  --brand-icon-color: #1a1d1f;
+  --account-bg: #272b30;
+  --brand-icon-filter: none;
+  --nav-icon-filter: invert(1);
+}
+
+/* Primary button (Bootstrap 5.3 variables) */
+.btn-primary {
+  --bs-btn-bg: var(--brand-600);
+  --bs-btn-border-color: var(--brand-600);
+  --bs-btn-hover-bg: var(--brand-700);
+  --bs-btn-hover-border-color: var(--brand-700);
+  --bs-btn-active-bg: var(--brand-700);
+  --bs-btn-active-border-color: var(--brand-700);
+  --bs-btn-color: #ffffff;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-active-color: #ffffff;
+}
+
+/* Cards and table headers for the report pages */
+.card { border-color: var(--sidebar-border); }
+.table > thead { background: var(--brand-50); }
+/* Apply dark/Light move inversion for SVG icons. */
+.brand-icon img {
+  filter: var(--brand-icon-filter);
+}
+.nav-icon,
+.icon-sun {
+  filter: var(--nav-icon-filter);
+  transition: filter 0.2s ease; /* icons fade with the theme instead of snapping */
+}
+
+
+/* Sidebar Container */
+.sidebar {
+  width: 260px;
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Brand Header */
+.sidebar-brand {
+  color: inherit;
+  height: var(--header-height);
+  margin: 0 1rem; /* keeps the divider line off the sidebar edges */
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+/* Top bar: same minimum height as the sidebar brand (grows only if its content wraps) */
+.app-header {
+  min-height: var(--header-height);
+}
+
+/* Logo div rounded rectangle */
+.brand-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background-color: var(--brand-icon-bg);
+  color: var(--brand-icon-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--bs-body-color, #1a1d1f);
+}
+
+/* Sidebar Navigation Links */
+.sidebar .nav-link {
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--nav-text);
+  border-radius: 12px;
+  padding: 11px 14px;
+  transition: all 0.15s ease-in-out;
+  border: 1px solid transparent;
+}
+
+.sidebar .nav-link .nav-icon {
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar .nav-link:hover {
+  color: var(--bs-body-color, #1a1d1f);
+  background-color: var(--nav-hover-bg);
+}
+
+/* Active Nav Pill: Soft elevated card background matching screenshot */
+.sidebar .nav-link.active {
+  background-color: var(--nav-active-bg);
+  color: var(--nav-active-text);
+  box-shadow: var(--nav-active-shadow);
+  border-color: var(--sidebar-border);
+}
+
+.sidebar .nav-link.active .nav-icon {
+  opacity: 1;
+}
+
+/* Sidebar Footer: Theme Button */
+.sidebar-footer {
+  border-top: 1px solid var(--sidebar-border);
+}
+
+.theme-toggle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--sidebar-border);
+  background-color: var(--sidebar-bg);
+  color: var(--nav-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  color: var(--bs-body-color, #1a1d1f);
+  background-color: var(--nav-hover-bg);
+}
+
+/* ---------- Reusable page components (use the existing theme variables) ---------- */
+.page-card {
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--sidebar-border);
+  border-radius: 16px;
+  box-shadow: var(--nav-active-shadow);
+}
+
+/* Icons inside primary buttons (the download icon is black) show in white */
+.btn-primary img {
+  filter: invert(1);
+}
+
+/* ---------- Dashboard ---------- */
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: var(--brand-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.kpi-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+/* Progress bars: Bootstrap hard-codes a blue bar, so point it at the theme colors */
+.progress {
+  --bs-progress-bg: var(--brand-100);
+  --bs-progress-bar-bg: var(--brand-600);
+  --bs-progress-bar-color: var(--bs-body-bg);
+}
+
+/* Long shelter lists scroll inside their card instead of stretching the page */
+.shelter-list {
+  max-height: 20rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+/* Chart.js needs a sized, positioned parent to fill */
+.chart-box {
+  position: relative;
+  height: 20rem;
+}
