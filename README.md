@@ -123,9 +123,20 @@ cp .env.example .env
 ```
 
 Then open `.env` and fill in your own values. **Never commit this file.** It should already be in your `.gitignore`.
+```py
+SECRET_KEY=your-own/generated-key # Change for actual use
+DJANGO_DEBUG=True
+DJANGO_ALLOWED_HOSTS=
+
+DB_ENGINE=django.db.backends.mysql
+DB_NAME=pet_adoption_db
+DB_USER=petuser
+DB_PASSWORD=your_mysql_password # Change to actual password
+DB_HOST=127.0.0.1
+DB_PORT=3306
+```
 
 Make your own `SECRET_KEY` or generate one:
-
 ```bash
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
@@ -141,8 +152,9 @@ mysql -u root -p
 Then run to create the database in MySQL:
 > Change to your password
 ```sql
-CREATE DATABASE pet_adoption_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'petuser'@'localhost' IDENTIFIED BY 'your_password_here';
+CREATE DATABASE IF NOT EXISTS pet_adoption_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS 'petuser'@'localhost'
+IDENTIFIED BY 'your_password_here';
 GRANT ALL PRIVILEGES ON pet_adoption_db.* TO 'petuser'@'localhost';
 EXIT;
 ```
@@ -173,8 +185,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser or whatever is given in the terminal.
-
+Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser or whatever is your host in the terminal.
 
 
 ## Project Structure
