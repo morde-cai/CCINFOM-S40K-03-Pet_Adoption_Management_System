@@ -1,5 +1,6 @@
 {# One shelter: icon, name, address, "X / capacity" and a progress bar. Expects `shelter` (see views.dashboard). #}
 {% load static %}
+
 <div class="d-flex align-items-center gap-3 mb-4">
     <div class="kpi-icon"><img class="nav-icon" src="{% static 'images/icons/shelter.svg' %}" alt="" width="20" height="20"></div>
     <div class="flex-grow-1">
@@ -11,7 +12,7 @@
             <span class="small fw-semibold text-nowrap">{{ shelter.occupancy }} / {{ shelter.capacity }} pets</span>
         </div>
         <div class="progress" role="progressbar" aria-label="{{ shelter.shelter_name }} occupancy"
-             aria-valuenow="{{ shelter.percent }}" aria-valuemin="0" aria-valuemax="100">
+            aria-valuenow="{{ shelter.percent }}" aria-valuemin="0" aria-valuemax="100">
             <div class="progress-bar {{ shelter.bar_class }}" style="width: {{ shelter.percent }}%">{{ shelter.percent }}%</div>
         </div>
     </div>
