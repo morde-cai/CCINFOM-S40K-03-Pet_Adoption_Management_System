@@ -31,7 +31,7 @@
 | Aceveda, Jiahe    | DB Design, `TODO` |
 | Dy, Jasmine       | DB Design, `TODO` |
 | Nucum, Mark       | DB Design, `TODO` |
-| Pielago, James C. | DB Design, Backend Development, Core Features, Documentation |
+| Pielago, James C. | DB Design, Backend & Frontend Development, Core Features, Documentation |
 
 
 
