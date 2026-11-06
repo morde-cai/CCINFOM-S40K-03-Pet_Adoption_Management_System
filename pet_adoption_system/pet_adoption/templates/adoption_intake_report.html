@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Adoptions &amp; Intake Report | Pet Adoption{% endblock %}
+
+<!-- Top nav bar (header + button)-->
+{% block topnav_breadcrumb %}Paws Adoption / Adoptions &amp; Intake Report {% endblock %}
+{% block topnav_head %} Adoptions &amp; Intake Summary Report ({{ selected_month_name }} {{ selected_year }}) {% endblock %}
+{% block header_actions %}
+    <button type="button" id="downloadIntakePdfBtn" class="btn btn-sm btn-primary fw-semibold text-nowrap">
+        <img src="{% static 'images/icons/download.svg' %}" alt="" width="16" height="16">
+        Download as PDF
+    </button>
+{% endblock %}
+
+{% block content %}
+    <div class="page-card p-4 text-body-secondary">Report content will be placed here.</div>
+{% endblock %}

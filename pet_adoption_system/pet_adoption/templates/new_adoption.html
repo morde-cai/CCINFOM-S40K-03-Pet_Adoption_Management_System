@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+<!-- Top nav bar (header + button)-->
+{% block topnav_breadcrumb %}Paws Adoption / New Adoption {% endblock %}
+{% block topnav_head %} New Adoption — Available Pet Catalogue {% endblock %}
+{% block header_actions %}
+    <a href="{% url 'new_adoption' %}" class="btn btn-sm btn-primary fw-semibold text-nowrap"> + Add New Pet </a>
+{% endblock %}

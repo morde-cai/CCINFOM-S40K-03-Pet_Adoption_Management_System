@@ -133,7 +133,7 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 > Copy the key into your `.env`. No quotes around values and no spaces around the `=` in `.env`.
 
 ### 5. Set up the database
-Log in your sql account (ensure your MySQL is in your Environmental Variables Path):
+Log in your MySQL account (ensure your MySQL is in your Environmental Variables Path):
 ```bash
 mysql -u root -p
 ```
@@ -188,3 +188,6 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser or whateve
 ## References
 - *AmaneKai (n.d.). CCINFOM-DBAPP-SAMPLE. https://github.com/AmaneKai/CCINFOM-DBAPP-SAMPLE*
 - *Django (n.d.). Django documentation. Django Project. https://docs.djangoproject.com/en/6.1/*
+- *Bootstrap (n.d.). Bootstrap 6 Documentation. https://getbootstrap.com/docs/6.0/getting-started/install/*
+- *Lucide (n.d.). Lucide. https://lucide.dev/*
+- *Chart.js (n.d.). Chart.js Docs. https://www.chartjs.org/docs/latest/*
