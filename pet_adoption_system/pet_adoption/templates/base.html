@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Pet Adoption{% endblock %}</title>
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <script src="{% static 'js/custom.js' %}"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <div class="d-flex min-vh-100">
+
+        <aside class="sidebar d-flex flex-column">
+            <a href="{% url 'dashboard' %}" class="sidebar-brand d-flex align-items-center gap-2 text-decoration-none">
+                <div class="brand-icon">
+                    <img src="{% static 'images/icons/paw.svg' %}" alt="" width="18" height="18">
+                </div>
+                <div>
+                    <div class="brand-name lh-1">Paws Adoption</div>
+                    <small class="text-body-secondary">Management System</small>
+                </div>
+            </a>
+
+            <!-- Sidebar Navigation Links -->
+            <ul class="nav nav-pills flex-column gap-2 mb-auto px-3 pt-4 pb-3">
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                       href="{% url 'dashboard' %}">
+                        <img class="nav-icon" src="{% static 'images/icons/dashboard.svg' %}" alt="" width="18" height="18">
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'new_adoption' %}active{% endif %}"
+                       href="{% url 'new_adoption' %}">
+                        <img class="nav-icon" src="{% static 'images/icons/paw.svg' %}" alt="" width="18" height="18">
+                        <span>New Adoption</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'adoption_intake_report' %}active{% endif %}"
+                       href="{% url 'adoption_intake_report' %}">
+                        <img class="nav-icon" src="{% static 'images/icons/file.svg' %}" alt="" width="18" height="18">
+                        <span>Adoptions and Intake Report</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'staff_report' %}active{% endif %}"
+                       href="{% url 'staff_report' %}">
+                        <img class="nav-icon" src="{% static 'images/icons/staffs.svg' %}" alt="" width="18" height="18">
+                        <span>Staff Adoptions Report</span>
+                    </a>
+                </li>
+            </ul>
+               
+            <!-- Pushed to the bottom: Dark mode toggle + Admin Panel -->
+            <div class="sidebar-footer mt-auto mx-3 pt-3 pb-3">
+                <div class="d-flex align-items-center justify-content-start gap-2 mb-3 px-1">
+                    <button id="themeToggleBtn" type="button" class="theme-toggle-btn" title="Toggle Light / Dark Mode">
+                        <img id="themeIcon" class="icon-sun" src="{% static 'images/icons/moon.svg' %}"
+                             data-sun="{% static 'images/icons/sun.svg' %}" data-moon="{% static 'images/icons/moon.svg' %}"
+                             alt="Toggle theme" width="16" height="16">
+                    </button>
+                    <a href="{% url 'admin:index' %}" class="theme-toggle-btn" title="Admin">
+                        <img class="nav-icon" src="{% static 'images/icons/admin.svg' %}" alt="Admin" width="16" height="16">
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+    <!-- Main Content Area (Top Navbar Header + Page Viewport) -->
+    <div class="flex-grow-1 d-flex flex-column min-w-0">
+        <header class="app-header bg-body border-bottom px-4 py-2 d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <!-- The text header at the top nav bar -->
+            <div>
+                <div class="small text-body-secondary">
+                    {% block topnav_breadcrumb %}Paws {% endblock %}
+                </div>
+                <h1 class="h5 fw-bold mb-0 mt-1">
+                    {% block topnav_head %}{% endblock %}
+                </h1>
+            </div>
+            
+            <!-- Da top right button -->
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                {% block header_actions %}{% endblock %}
+            </div>
+        </header>
+      
+        <main class="p-4 flex-grow-1">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    </div>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
