@@ -59,8 +59,18 @@ Managed records:
 
 
 ## Tech Stack
-`TODO`
 
+| Layer                 | Technology                     | 
+|-----------------------|--------------------------------|
+| Language              | Python 3                       |  
+| Web Framework         | Django 6                       |
+| Database              | MySQL 8.4+                     |
+| Charts                | Chart.js                       |
+| Records Management UI | Django Admin                   |
+| Custom UI             | Bootstrap 5 + Custom CSS / JS  |
+| PDF Generation        | `TODO`                         |
+| Config                | python-dotenv                  |
+| Environment           | venv                           | 
 
 ## Database Design (ERD)
 `TODO`
