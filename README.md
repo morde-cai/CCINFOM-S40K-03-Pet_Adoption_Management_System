@@ -209,6 +209,6 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser or whateve
 ## References
 - *AmaneKai (n.d.). CCINFOM-DBAPP-SAMPLE. https://github.com/AmaneKai/CCINFOM-DBAPP-SAMPLE*
 - *Django (n.d.). Django documentation. Django Project. https://docs.djangoproject.com/en/6.1/*
-- *Bootstrap (n.d.). Bootstrap 6 Documentation. https://getbootstrap.com/docs/6.0/getting-started/install/*
+- *Bootstrap (n.d.). Bootstrap 5 Documentation. https://getbootstrap.com/docs/5.3/getting-started/introduction/*
 - *Lucide (n.d.). Lucide. https://lucide.dev/*
 - *Chart.js (n.d.). Chart.js Docs. https://www.chartjs.org/docs/latest/*
