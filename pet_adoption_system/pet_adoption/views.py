@@ -112,7 +112,7 @@ def staff_report(request):
     # Filter adoptions by status and year
     # MYSQL: WHERE status = 'Completed' AND YEAR(adoption_date) = <year>
     handled_in_year = Q(
-                        adoptions__status = AdoptionStatus.COMPLETED, adoptions__adoption_year = year
+                        adoptions__status = AdoptionStatus.COMPLETED, adoptions__adoption_date__year = year
     )
 
     """
@@ -127,7 +127,7 @@ def staff_report(request):
     ORDER BY
         pets_handled DESC, s.last_name ASC, s.first_name ASC;
     """
-    
+
     ranks = list(
         Staff.objects.all().annotate(pets_handled = Count("adoptions", filter= handled_in_year)).order_by("-pets_handled", "last_name", "first_name")
     )
