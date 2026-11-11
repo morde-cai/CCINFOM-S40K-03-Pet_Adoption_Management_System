@@ -139,13 +139,13 @@ def staff_report(request):
         staff.rank = rank
 
     kpis = [
-            {"label": f"Total Adoptions Handled in {year}", "value": total_handled, "icon": "box-open.svg",
-             "sub": f"Completed Across {ranks.count()} staff members"},
+            {"label": f"Total Adoptions Handled in {year}", "value": total_handled, "icon": "paw.svg",
+             "sub": f"Completed Across {len(ranks)} staff members"},
 
-            {"label": "Top Performer", "value": ranks[0], "icon": "gifts.svg",
-             "sub": f"Handled {0} adoptions in {year} "},
+            {"label": "Top Performer", "value": ranks[0] if ranks else "No Staffs", "icon": "gift.svg",
+             "sub": f"Handled {ranks[0].pets_handled if ranks else 0} adoptions in {year} "},
 
-            {"label": "Staff on Record", "value": ranks.count(), "icon": "staffs.svg",
+            {"label": "Staff on Record", "value": len(ranks), "icon": "staffs.svg",
              "sub": "across all shelters"},
         ]
 
