@@ -94,5 +94,54 @@ def adoption_intake_report(request):
         "selected_month_name": today.strftime("%B"),
     })
 
+def _requested_year(request):
+    year_param = request.GET.get('year')
+    if not year_param or not year_param.isdigit():
+        return date.today().year
+    return int(year_param)
+
 def staff_report(request):
-    return render(request, "staff_report.html", {"selected_year": timezone.localdate().year})
+    year = _requested_year(request)
+
+    # completed adoption years
+    available_years = [
+        i.year for i in
+        Adoption.objects.filter(status=AdoptionStatus.COMPLETED, adoption_date__isnull = False).dates("adoption_date", "year", order="DESC")
+    ] or [year]
+
+    # Filter adoptions by status and year
+    # MYSQL: WHERE status = 'Completed' AND YEAR(adoption_date) = <year>
+    handled_in_year = Q(
+                        adoptions__status = AdoptionStatus.COMPLETED, adoptions__adoption_year = year
+    )
+
+    """
+    SELECT s.id, s.first_name, s.last_name, COUNT(a.id) AS pets_handled
+    FROM staff s
+    LEFT JOIN adoptions a 
+        ON s.id = a.staff_id
+            AND a.status = 'COMPLETED'
+            AND a.adoption_date BETWEEN <year_first_day> AND <year_last_day>
+    GROUP BY
+        s.id, s.last_name, s.first_name
+    ORDER BY
+        pets_handled DESC, s.last_name ASC, s.first_name ASC;
+    """
+    
+    ranks = list(
+        Staff.objects.all().annotate(pets_handled = Count("adoptions", filter= handled_in_year)).order_by("-pets_handled", "last_name", "first_name")
+    )
+
+    # Total count per year
+    total_handled = sum(staff.pets_handled for staff in ranks)
+
+    for rank, staff in enumerate(ranks, start = 1):
+        staff.rank = rank
+
+    return render(request, "staff_report.html", 
+                  {"selected_year": year,
+                   "available_years" : available_years,
+                   "ranks" : ranks,
+                   "total_handled": total_handled,
+                   }
+                  )
