@@ -171,7 +171,6 @@ def staff_report(request):
     return render(request, "staff_report.html", {
         "selected_year": year,
         "available_years": available_years,
-        "ranks": page_obj,  
         "page_obj": page_obj,
         "kpis": kpis,
         "chart_data": chart_data,

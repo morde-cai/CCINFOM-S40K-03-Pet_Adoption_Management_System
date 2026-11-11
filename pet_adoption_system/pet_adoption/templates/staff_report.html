@@ -29,18 +29,14 @@
             <div class="col">{% include "_kpi_card.html" %}</div>
         {% endfor %}
     </div>
-    <!-- Progress bar -->
-    <div class="col-lg-12 mb-4">
-            <div class="page-card p-4 h-100">
-                <h3 class="h6 fw-bold mb-4">Shelter Occupancy <span class="fw-normal small text-body-secondary ms-1">fullest first</span></h3>
-                <div class="shelter-list">
-                    {% for shelter in shelters %}
-                        {% include "_shelter_row.html" %}
-                    {% empty %}
-                        <p class="text-body-secondary mb-0">No shelters yet. Add one in the admin panel.</p>
-                    {% endfor %}
-                </div>
-            </div>
+    <!-- Top 10 Staff by Completed Adoptions -->
+    <div class="page-card p-4 mb-4">
+        <h3 class="h6 fw-bold mb-4">Staff Adoptions Handled <span class="fw-normal small text-body-secondary ms-1">top {{ chart_data.labels|length }} in {{ selected_year }}</span></h3>
+        {% if chart_data.labels %}
+            <div class="chart-box"><canvas id="staffChart" aria-label="Horizontal bar chart of completed adoptions per staff member" role="img"></canvas></div>
+        {% else %}
+            <p class="text-body-secondary mb-0">No staff members yet. Add one in the admin panel.</p>
+        {% endif %}
     </div>
 
     <!-- Table -->
@@ -64,7 +60,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for staff in ranks %}
+                    {% for staff in page_obj %}
                         <tr>
                             <td class="text-body-secondary">{{ staff.rank }}</td>
                             <td class="fw-semibold">{{ staff.first_name }} {{ staff.last_name }}</td>
