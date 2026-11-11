@@ -147,7 +147,7 @@ def staff_report(request):
 
             {"label": "Staff on Record", "value": len(ranks), "icon": "staffs.svg",
              "sub": "across all shelters"},
-        ]
+    ]
 
     return render(request, "staff_report.html", 
                   {"selected_year": year,

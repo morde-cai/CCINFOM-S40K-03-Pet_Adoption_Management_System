@@ -8,6 +8,14 @@
 {% block topnav_breadcrumb %}Paws Adoption / Staff Report {% endblock %}
 {% block topnav_head %} Staff Adoptions Report ({{ selected_year }} Annual Leaderboard) {% endblock %}
 {% block header_actions %}
+    <form method="get" class="d-flex align-items-center gap-2">
+                <label for="yearSelect" class="small text-body-secondary mb-0">Year</label>
+                <select id="yearSelect" name="year" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    {% for year in available_years %}
+                        <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </form>
     <button type="button" id="downloadStaffPdfBtn" class="btn btn-sm btn-primary fw-semibold text-nowrap">
         <img src="{% static 'images/icons/download.svg' %}" alt="" width="16" height="16">
         Download as PDF
@@ -19,5 +27,64 @@
         {% for kpi in kpis %}
             <div class="col">{% include "_kpi_card.html" %}</div>
         {% endfor %}
+    </div>
+
+    <div class="col-lg-12 mb-4">
+            <div class="page-card p-4 h-100">
+                <h3 class="h6 fw-bold mb-4">Shelter Occupancy <span class="fw-normal small text-body-secondary ms-1">fullest first</span></h3>
+                <div class="shelter-list">
+                    {% for shelter in shelters %}
+                        {% include "_shelter_row.html" %}
+                    {% empty %}
+                        <p class="text-body-secondary mb-0">No shelters yet. Add one in the admin panel.</p>
+                    {% endfor %}
+                </div>
+            </div>
+    </div>
+
+    <div class="page-card p-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <h3 class="h6 fw-bold mb-0">Staff Leaderboard <span class="fw-normal small text-body-secondary ms-1">pets handled in {{ selected_year }}</span></h3>
+            
+        </div>
+
+
+    <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-body-secondary">#</th>
+                        <th scope="col">Staff</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Shelter</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-end">Pets Handled</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in ranks %}
+                        <tr>
+                            <td class="text-body-secondary">{{ staff.rank }}</td>
+                            <td class="fw-semibold">{{ staff.first_name }} {{ staff.last_name }}</td>
+                            <td>{{ staff.role.role_name }}</td>
+                            <td>{{ staff.shelter.shelter_name }}</td>
+                            <td>
+                                <span class="badge rounded-pill
+                                    {% if staff.status == 'active' %}text-bg-success
+                                    {% elif staff.status == 'on-leave' %}text-bg-warning
+                                    {% else %}text-bg-secondary{% endif %}">
+                                    {{ staff.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="text-end fw-bold">{{ staff.pets_handled }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-body-secondary py-4">No staff members yet. Add one in the admin panel.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}
