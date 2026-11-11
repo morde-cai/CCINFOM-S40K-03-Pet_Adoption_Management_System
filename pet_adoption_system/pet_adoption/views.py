@@ -103,7 +103,7 @@ def _requested_year(request):
 def staff_report(request):
     year = _requested_year(request)
 
-    # completed adoption years
+    # Completed adoption years
     available_years = [
         i.year for i in
         Adoption.objects.filter(status=AdoptionStatus.COMPLETED, adoption_date__isnull = False).dates("adoption_date", "year", order="DESC")
@@ -129,7 +129,7 @@ def staff_report(request):
     """
 
     ranks = list(
-        Staff.objects.all().annotate(pets_handled = Count("adoptions", filter= handled_in_year)).order_by("-pets_handled", "last_name", "first_name")
+        Staff.objects.all().annotate(pets_handled = Count("adoptions", filter = handled_in_year)).order_by("-pets_handled", "last_name", "first_name")
     )
 
     # Total count per year
@@ -138,10 +138,22 @@ def staff_report(request):
     for rank, staff in enumerate(ranks, start = 1):
         staff.rank = rank
 
+    kpis = [
+            {"label": f"Total Adoptions Handled in {year}", "value": total_handled, "icon": "box-open.svg",
+             "sub": f"Completed Across {ranks.count()} staff members"},
+
+            {"label": "Top Performer", "value": ranks[0], "icon": "gifts.svg",
+             "sub": f"Handled {0} adoptions in {year} "},
+
+            {"label": "Staff on Record", "value": ranks.count(), "icon": "staffs.svg",
+             "sub": "across all shelters"},
+        ]
+
     return render(request, "staff_report.html", 
                   {"selected_year": year,
                    "available_years" : available_years,
                    "ranks" : ranks,
                    "total_handled": total_handled,
+                   "kpis" : kpis
                    }
                   )
