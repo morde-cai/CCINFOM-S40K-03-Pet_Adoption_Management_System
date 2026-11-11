@@ -1,18 +1,124 @@
+
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %} Adoptions Intake Report | Paws {% endblock %}
+{% block title %}Adoptions & Intake Report | Paws{% endblock %}
 
-<!-- Top nav bar (header + button)-->
-{% block topnav_breadcrumb %}Paws Adoption / Adoptions &amp; Intake Report {% endblock %}
-{% block topnav_head %} Adoptions &amp; Intake Summary Report ({{ selected_month_name }} {{ selected_year }}) {% endblock %}
+{% block topnav_breadcrumb %}Paws Adoption / Adoptions &amp; Intake Report{% endblock %}
+{% block topnav_head %}Adoptions &amp; Intake Summary Report ({{ selected_month_name }} {{ selected_year }}){% endblock %}
+
 {% block header_actions %}
-    <button type="button" id="downloadIntakePdfBtn" class="btn btn-sm btn-primary fw-semibold text-nowrap">
-        <img src="{% static 'images/icons/download.svg' %}" alt="" width="16" height="16">
-        Download as PDF
-    </button>
+<button type="button" class="btn btn-sm btn-primary fw-semibold" onclick="window.print()">
+    Download / Print Report
+</button>
 {% endblock %}
 
 {% block content %}
-    <div class="page-card p-4 text-body-secondary">Report content will be placed here.</div>
+
+<div class="page-card p-4 mb-4">
+    <h2 class="h6 fw-bold mb-3">Intake Report Filters</h2>
+
+    <form method="GET" class="d-flex flex-wrap gap-3 align-items-end">
+        <div>
+            <label for="year" class="form-label">Year</label>
+            <select name="year" id="year" class="form-select">
+                {% for year in years %}
+                <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>
+                    {{ year }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="month" class="form-label">Month</label>
+            <select name="month" id="month" class="form-select">
+                <option value="">All Months</option>
+                {% for number, name in months %}
+                <option value="{{ number }}" {% if selected_month == number|stringformat:"s" %}selected{% endif %}>
+                    {{ name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Generate Report</button>
+        <a href="{% url 'adoption_intake_report' %}" class="btn btn-outline-secondary">Reset</a>
+    </form>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="page-card p-4 h-100">
+            <div class="small text-body-secondary">Total Pets Taken In</div>
+            <div class="display-5 fw-bold">{{ total_intake }}</div>
+            <div class="small text-body-secondary">{{ selected_month_name }} {{ selected_year }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="page-card p-4 mb-4">
+    <h2 class="h6 fw-bold mb-3">Intake by Species</h2>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Species</th>
+                    <th>Total Pets Taken In</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in species_data %}
+                <tr>
+                    <td>{{ item.breed__species__name }}</td>
+                    <td>{{ item.total }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2" class="text-center text-body-secondary">
+                        No intake records found for this period.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="page-card p-4">
+    <h2 class="h6 fw-bold mb-3">Pet Intake Records</h2>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Pet Name</th>
+                    <th>Species</th>
+                    <th>Breed</th>
+                    <th>Shelter</th>
+                    <th>Intake Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pet in intake_records %}
+                <tr>
+                    <td>{{ pet.name }}</td>
+                    <td>{{ pet.breed.species.name }}</td>
+                    <td>{{ pet.breed.name }}</td>
+                    <td>{{ pet.shelter.shelter_name }}</td>
+                    <td>{{ pet.intake_date|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-body-secondary">
+                        No pets found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
 {% endblock %}
