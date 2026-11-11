@@ -4,6 +4,7 @@ from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
 from django.shortcuts import render
 from django.utils import timezone
+from django.core.paginator import Paginator
 
 from .models import *
 
@@ -94,20 +95,24 @@ def adoption_intake_report(request):
         "selected_month_name": today.strftime("%B"),
     })
 
+# Staff Adoptions Report
+
 def _requested_year(request):
     year_param = request.GET.get('year')
     if not year_param or not year_param.isdigit():
         return date.today().year
     return int(year_param)
 
+STAFF_PAGE_SIZE = 100 # limit to 100 at a time so it doesnt load all of the DB's records
+STAFF_CHART_SIZE = 10 # max number of staff for the chart
+
 def staff_report(request):
     year = _requested_year(request)
 
-    # Completed adoption years
-    available_years = [
-        i.year for i in
-        Adoption.objects.filter(status=AdoptionStatus.COMPLETED, adoption_date__isnull = False).dates("adoption_date", "year", order="DESC")
-    ] or [year]
+    completed = Adoption.objects.filter(status=AdoptionStatus.COMPLETED, adoption_date__isnull=False)
+    available_years = [d.year for d in completed.dates("adoption_date", "year", order="DESC")]
+    if year not in available_years:
+        available_years = sorted(available_years + [year], reverse=True)
 
     # Filter adoptions by status and year
     # MYSQL: WHERE status = 'Completed' AND YEAR(adoption_date) = <year>
@@ -128,32 +133,46 @@ def staff_report(request):
         pets_handled DESC, s.last_name ASC, s.first_name ASC;
     """
 
-    ranks = list(
-        Staff.objects.all().annotate(pets_handled = Count("adoptions", filter = handled_in_year)).order_by("-pets_handled", "last_name", "first_name")
+    ranks = (
+        Staff.objects.select_related("role", "shelter")
+        .annotate(pets_handled=Count("adoptions", filter=handled_in_year))
+        .order_by("-pets_handled", "last_name", "first_name", "id")
     )
+
+    # Chart
+    top_ten = list(ranks[:STAFF_CHART_SIZE])
+    chart_data = {
+        "labels": [str(staff) for staff in top_ten],
+        "values": [staff.pets_handled for staff in top_ten],
+    }
+
+    # Table
+    paginator = Paginator(ranks, STAFF_PAGE_SIZE)
+    page_obj = paginator.get_page(request.GET.get("page"))
+    for rank, staff in enumerate(page_obj, start=page_obj.start_index()):
+        staff.rank = rank
 
     # Total count per year
     total_handled = sum(staff.pets_handled for staff in ranks)
+    top = top_ten[0] if top_ten and top_ten[0].pets_handled else None
 
-    for rank, staff in enumerate(ranks, start = 1):
-        staff.rank = rank
 
     kpis = [
-            {"label": f"Total Adoptions Handled in {year}", "value": total_handled, "icon": "paw.svg",
-             "sub": f"Completed Across {len(ranks)} staff members"},
+        {"label": f"Total Adoptions Handled in {year}", "value": total_handled, "icon": "paw.svg",
+        "sub": f"Completed across {paginator.count} staff members"},
 
-            {"label": "Top Performer", "value": ranks[0] if ranks else "No Staffs", "icon": "gift.svg",
-             "sub": f"Handled {ranks[0].pets_handled if ranks else 0} adoptions in {year} "},
+        {"label": "Top Performer", "value": str(top) if top else "No adoptions yet", "icon": "gift.svg",
+        "sub": f"Handled {top.pets_handled} adoptions in {year}" if top else f"No completed adoptions in {year}"},
 
-            {"label": "Staff on Record", "value": len(ranks), "icon": "staffs.svg",
-             "sub": "across all shelters"},
+        {"label": "Staff on Record", "value": paginator.count, "icon": "staffs.svg",
+        "sub": "across all shelters"},
     ]
 
-    return render(request, "staff_report.html", 
-                  {"selected_year": year,
-                   "available_years" : available_years,
-                   "ranks" : ranks,
-                   "total_handled": total_handled,
-                   "kpis" : kpis
-                   }
-                  )
+    return render(request, "staff_report.html", {
+        "selected_year": year,
+        "available_years": available_years,
+        "ranks": page_obj,  
+        "page_obj": page_obj,
+        "kpis": kpis,
+        "chart_data": chart_data,
+    })
