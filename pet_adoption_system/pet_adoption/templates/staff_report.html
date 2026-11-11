@@ -23,12 +23,13 @@
 {% endblock %}
 
 {% block content %}
+    <!-- kpi rows -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3 mb-4">
         {% for kpi in kpis %}
             <div class="col">{% include "_kpi_card.html" %}</div>
         {% endfor %}
     </div>
-
+    <!-- Progress bar -->
     <div class="col-lg-12 mb-4">
             <div class="page-card p-4 h-100">
                 <h3 class="h6 fw-bold mb-4">Shelter Occupancy <span class="fw-normal small text-body-secondary ms-1">fullest first</span></h3>
@@ -42,6 +43,7 @@
             </div>
     </div>
 
+    <!-- Table -->
     <div class="page-card p-4">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
             <h3 class="h6 fw-bold mb-0">Staff Leaderboard <span class="fw-normal small text-body-secondary ms-1">pets handled in {{ selected_year }}</span></h3>
