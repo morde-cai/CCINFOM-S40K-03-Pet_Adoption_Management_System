@@ -5,7 +5,10 @@ from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
 from django.shortcuts import render, redirect
 from django.utils import timezone
-
+from django.db.models import Count
+from django.db.models.functions import ExtractMonth
+from django.utils import timezone
+import calendar
 from .models import *
 
 
@@ -322,7 +325,6 @@ def adoption_intake_report(request):
     if month_value:
         try:
             selected_month = int(month_value)
-
             if 1 <= selected_month <= 12:
                 pets = pets.filter(intake_date__month=selected_month)
             else:
@@ -332,11 +334,34 @@ def adoption_intake_report(request):
 
     total_intake = pets.count()
 
-    species_data = (
+    species_data = list(
         pets.values("breed__species__name")
         .annotate(total=Count("id"))
         .order_by("breed__species__name")
     )
+
+    monthly_data = (
+        Pet.objects.filter(intake_date__year=selected_year)
+        .annotate(month_number=ExtractMonth("intake_date"))
+        .values("month_number")
+        .annotate(total=Count("id"))
+        .order_by("month_number")
+    )
+
+    monthly_lookup = {
+        item["month_number"]: item["total"]
+        for item in monthly_data
+    }
+
+    monthly_labels = [
+        calendar.month_abbr[month]
+        for month in range(1, 13)
+    ]
+
+    monthly_values = [
+        monthly_lookup.get(month, 0)
+        for month in range(1, 13)
+    ]
 
     intake_records = pets.select_related(
         "breed", "breed__species", "shelter"
@@ -349,18 +374,22 @@ def adoption_intake_report(request):
     )
 
     months = [
-        (1, "January"), (2, "February"), (3, "March"),
-        (4, "April"), (5, "May"), (6, "June"),
-        (7, "July"), (8, "August"), (9, "September"),
-        (10, "October"), (11, "November"), (12, "December"),
+        (number, calendar.month_name[number])
+        for number in range(1, 13)
     ]
 
     selected_month_name = (
-        dict(months).get(int(month_value), "All Months")
+        calendar.month_name[int(month_value)]
         if month_value else "All Months"
     )
 
-    return render(request, "adoption_intake_report.html", {
+    top_species = max(
+        species_data,
+        key=lambda item: item["total"],
+        default=None
+    )
+
+    context = {
         "selected_year": selected_year,
         "selected_month": month_value,
         "selected_month_name": selected_month_name,
@@ -369,7 +398,29 @@ def adoption_intake_report(request):
         "total_intake": total_intake,
         "species_data": species_data,
         "intake_records": intake_records,
-    })
+
+        # Chart data
+        "monthly_labels": monthly_labels,
+        "monthly_values": monthly_values,
+        "species_labels": [
+            item["breed__species__name"] for item in species_data
+        ],
+        "species_values": [
+            item["total"] for item in species_data
+        ],
+
+        # Insights
+        "top_species": top_species,
+        "average_monthly_intake": round(
+            sum(monthly_values) / 12, 1
+        ),
+    }
+
+    return render(
+        request,
+        "adoption_intake_report.html",
+        context
+    )
 
 
 def staff_report(request):
