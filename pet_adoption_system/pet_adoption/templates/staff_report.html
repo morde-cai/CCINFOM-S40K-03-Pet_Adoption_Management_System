@@ -84,6 +84,37 @@
                 </tbody>
             </table>
         </div>
+        {% if page_obj.has_other_pages %}
+            <nav class="d-flex justify-content-center mt-4" aria-label="Staff leaderboard pages">
+                <ul class="pagination mb-0">
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        {% if page_obj.has_previous %}
+                            <a class="page-link" href="?year={{ selected_year }}&amp;page={{ page_obj.previous_page_number }}" aria-label="Previous page">&lsaquo;</a>
+                        {% else %}
+                            <span class="page-link" aria-label="Previous page">&lsaquo;</span>
+                        {% endif %}
+                    </li>
+
+                    {% for p in page_range %}
+                        {% if p == page_obj.paginator.ELLIPSIS %}
+                            <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                        {% elif p == page_obj.number %}
+                            <li class="page-item active" aria-current="page"><span class="page-link">{{ p }}</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?year={{ selected_year }}&amp;page={{ p }}">{{ p }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        {% if page_obj.has_next %}
+                            <a class="page-link" href="?year={{ selected_year }}&amp;page={{ page_obj.next_page_number }}" aria-label="Next page">&rsaquo;</a>
+                        {% else %}
+                            <span class="page-link" aria-label="Next page">&rsaquo;</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
     </div>
 {% endblock %}
 

@@ -149,6 +149,7 @@ def staff_report(request):
     # Table
     paginator = Paginator(ranks, STAFF_PAGE_SIZE)
     page_obj = paginator.get_page(request.GET.get("page"))
+    page_range = list(paginator.get_elided_page_range(page_obj.number, on_each_side=1, on_ends=1))
     for rank, staff in enumerate(page_obj, start=page_obj.start_index()):
         staff.rank = rank
 
@@ -174,4 +175,5 @@ def staff_report(request):
         "page_obj": page_obj,
         "kpis": kpis,
         "chart_data": chart_data,
+        "page_range": page_range,
     })
