@@ -1,72 +1,11 @@
-
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Add Adoption | Paws{% endblock %}
-{% block topnav_breadcrumb %}Paws Adoption / Add Adoption{% endblock %}
-{% block topnav_head %}Register New Adoption{% endblock %}
+{% block title %} New Adoption | Paws {% endblock %}
 
-{% block content %}
-
-<div class="page-card p-4">
-    <h2 class="h6 fw-bold mb-4">Adoption Information</h2>
-
-    <form method="POST">
-        {% csrf_token %}
-        {% if error %}
-    <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
-        <div class="mb-3">
-            <label class="form-label">Pet</label>
-            <select name="pet" class="form-select" required>
-                <option value="">Select Pet</option>
-                {% for pet in pets %}
-                <option value="{{ pet.id }}">{{ pet.name }} - {{ pet.breed.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Adopter</label>
-            <select name="adopter" class="form-select" required>
-                <option value="">Select Adopter</option>
-                {% for adopter in adopters %}
-                <option value="{{ adopter.id }}">{{ adopter }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Staff</label>
-            <select name="staff" class="form-select" required>
-                <option value="">Select Staff</option>
-                {% for member in staff_members %}
-                <option value="{{ member.id }}">{{ member }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Request Date</label>
-            <input type="date" name="request_date" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Adoption Date</label>
-            <input type="date" name="adoption_date" class="form-control">
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label">Status</label>
-            <select name="status" class="form-select" required>
-                {% for value, label in statuses %}
-                <option value="{{ value }}">{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Save Adoption</button>
-        <a href="{% url 'adoption_list' %}" class="btn btn-outline-secondary">Cancel</a>
-    </form>
-</div>
-
+<!-- Top nav bar (header + button)-->
+{% block topnav_breadcrumb %}Paws Adoption / New Adoption {% endblock %}
+{% block topnav_head %} New Adoption — Available Pet Catalogue {% endblock %}
+{% block header_actions %}
+    <a href="{% url 'new_adoption' %}" class="btn btn-sm btn-primary fw-semibold text-nowrap"> + Add New Pet </a>
 {% endblock %}
