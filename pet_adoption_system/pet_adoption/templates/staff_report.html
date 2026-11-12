@@ -9,17 +9,14 @@
 {% block topnav_head %} Staff Adoptions Report ({{ selected_year }} Annual Leaderboard) {% endblock %}
 {% block header_actions %}
     <form method="get" class="d-flex align-items-center gap-2">
-                <label for="yearSelect" class="small text-body-secondary mb-0">Year</label>
+                <label for="yearSelect" class="text-body-secondary mb-0">Year</label>
                 <select id="yearSelect" name="year" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
                     {% for year in available_years %}
                         <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
                     {% endfor %}
                 </select>
             </form>
-    <button type="button" id="downloadStaffPdfBtn" class="btn btn-sm btn-primary fw-semibold text-nowrap">
-        <img src="{% static 'images/icons/download.svg' %}" alt="" width="16" height="16">
-        Download as PDF
-    </button>
+    
 {% endblock %}
 
 {% block content %}
@@ -74,7 +71,7 @@
                                     {{ staff.get_status_display }}
                                 </span>
                             </td>
-                            <td class="text-end fw-bold">{{ staff.pets_handled }}</td>
+                            <td class="text-end fw-bold">{% if staff.pets_handled %}{{ staff.pets_handled }}{% else %}-{% endif %}</td>
                         </tr>
                     {% empty %}
                         <tr>

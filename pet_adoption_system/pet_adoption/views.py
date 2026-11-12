@@ -8,6 +8,10 @@ from django.core.paginator import Paginator
 
 from .models import *
 
+# Use for multiple top performers
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
+
 
 def _last_months(today, n=6):
     """First day of each of the last n months, oldest first (current month last)."""
@@ -150,23 +154,41 @@ def staff_report(request):
     paginator = Paginator(ranks, STAFF_PAGE_SIZE)
     page_obj = paginator.get_page(request.GET.get("page"))
     page_range = list(paginator.get_elided_page_range(page_obj.number, on_each_side=1, on_ends=1))
-    for rank, staff in enumerate(page_obj, start=page_obj.start_index()):
-        staff.rank = rank
+
+    previous_pets_handled = None
+    previous_rank = None
+    for position, staff in enumerate(page_obj, start=page_obj.start_index()):
+        if staff.pets_handled == previous_pets_handled:
+            staff.rank = previous_rank
+        else:
+            staff.rank = position
+            previous_rank = position
+        previous_pets_handled = staff.pets_handled
 
     # Total count per year
     total_handled = sum(staff.pets_handled for staff in ranks)
     top = top_ten[0] if top_ten and top_ten[0].pets_handled else None
 
+    # Calculates the top Perfomer
+    top_pets_handled = top_ten[0].pets_handled if top_ten else 0
+    top_performers = ([staff for staff in ranks if staff.pets_handled == top_pets_handled] if top_pets_handled else [])
+
 
     kpis = [
-        {"label": f"Total Adoptions Handled in {year}", "value": total_handled, "icon": "paw.svg",
-        "sub": f"Completed across {paginator.count} staff members"},
+        {"label": f"Total Adoptions Handled in {year}", 
+         "value": total_handled,
+         "icon": "paw.svg",
+         "sub": f"Completed across {paginator.count} staff members"},
 
-        {"label": "Top Performer", "value": str(top) if top else "No adoptions yet", "icon": "gift.svg",
-        "sub": f"Handled {top.pets_handled} adoptions in {year}" if top else f"No completed adoptions in {year}"},
+        {"label": "Top Performer" if len(top_performers) == 1 else "Top Performers", 
+         "value": mark_safe(",<br>".join(escape(str(staff)) for staff in top_performers)) if top_performers else "No adoptions yet",
+         "icon": "gift.svg",
+         "sub": f"Handled {top_pets_handled} adoptions in {year}" if top_performers else f"No completed adoptions in {year}"},
 
-        {"label": "Staff on Record", "value": paginator.count, "icon": "staffs.svg",
-        "sub": "across all shelters"},
+        {"label": "Staff on Record", 
+         "value": paginator.count, "icon": 
+         "staffs.svg",
+         "sub": "across all shelters"},
     ]
 
     return render(request, "staff_report.html", {
