@@ -54,4 +54,34 @@ INSERT INTO pet_adoption_breed (id, name, species_id) VALUES
 -- pets
 -- ============================================================
 INSERT INTO pet_adoption_pet (id, name, breed_id, status, shelter_id, sex, date_of_birth, kg_weight, intake_date, description) VALUES
-(1, 'Chloe', (16,3), 'in-shelter', 5, 'male', 2023-06-03, 4.0, '2025-07-06', 'Playful kitten, good with other pets.');
+(1, 'Chloe', 3, 'in-shelter', 5, 'male', 2023-06-03, 4.0, '2025-07-06', 'Playful kitten, good with other pets.');
+
+
+-- ============================================================
+-- staffroles
+-- ============================================================
+INSERT INTO pet_adoption_staffrole (id, role_name) VALUES
+(1, 'Manager'),
+(2, 'Veterinarian'),
+(3, 'Counselor'),
+(4, 'Volunteer Coordinator'),
+(5, 'Assistant');
+
+-- ============================================================
+-- staffs
+-- ============================================================
+INSERT INTO pet_adoption_staff (id, first_name, last_name, date_of_birth, sex, email, contact_number, address, role_id, status, shelter_id, hire_date) VALUES
+(1, 'Maria', 'Santos', '1985-03-14', 'female', 'maria.santos@pawshaven.ph', '09171234501', '12 Rizal St, Quezon City', 1, 'active', 1, '2019-06-01');
+
+
+-- ============================================================
+-- adopters
+-- ============================================================
+INSERT INTO pet_adoption_adopter (id, first_name, last_name, date_of_birth, sex, email, contact_number, address) VALUES
+(1, 'Ricardo', 'Garcia', '1995-06-03', 'male', 'ricardogarcia1@gmail.com', '09181590830', '89 Quezon Ave, Pasig');
+
+-- ============================================================
+-- adoptions
+-- ============================================================
+INSERT INTO pet_adoption_adoption (id, pet_id, adopter_id, staff_id, fee, request_date, adoption_date, status) VALUES
+(1, 1, 11, 1, 500.0, '2026-05-04', '2026-05-04', 'completed') -- same-day turnaround,
