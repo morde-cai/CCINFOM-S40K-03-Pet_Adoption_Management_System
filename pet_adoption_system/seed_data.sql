@@ -1,7 +1,4 @@
--- mysql -u <user> -p <database> < seed_data.sql
-
-
-
+-- mysql -u root -p pet_adoption_db < seed_data.sql
 
 USE pet_adoption_db;
 
@@ -110,7 +107,7 @@ INSERT INTO pet_adoption_staffrole (id, role_name) VALUES
 (1, 'Manager'),
 (2, 'Veterinarian'),
 (3, 'Counselor'),
-(4, 'Volunteer Coordinator'),
+(4, 'Intern'),
 (5, 'Assistant');
 
 -- ============================================================
