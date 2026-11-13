@@ -2,8 +2,6 @@ from django.db import models
 
 # Create your models here.
 
-IMAGE_DIR = "pets/"
-
 # -------------------------------------------------------------------
 # Enums
 # -------------------------------------------------------------------
@@ -81,8 +79,6 @@ class Pet(models.Model):
     description = models.TextField(
         blank=True, help_text="Personality, health notes, and anything adopters should know."
     )
-    # Needs Pillow + MEDIA_ROOT / MEDIA_URL in settings.py
-    image = models.ImageField(upload_to=IMAGE_DIR, null=True, blank=True)
  
     def __str__(self):
         return self.name
@@ -148,8 +144,6 @@ class Adoption(models.Model):
     staff = models.ForeignKey(
         Staff, on_delete=models.PROTECT, related_name="adoptions"
     )
-    # TODO?: MAKE A REPORT FOR THE FEE OF EVERY SHELTER
-    fee = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     request_date = models.DateField()
     adoption_date = models.DateField(null=True, blank=True)
     status = models.CharField(
