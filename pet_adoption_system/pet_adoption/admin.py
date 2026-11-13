@@ -42,6 +42,6 @@ class AdopterAdmin(admin.ModelAdmin):
  
 @admin.register(Adoption)
 class AdoptionAdmin(admin.ModelAdmin):
-    list_display = ("id", "pet", "adopter", "staff", "status", "fee", "request_date", "adoption_date")
+    list_display = ("id", "pet", "adopter", "staff", "status", "request_date", "adoption_date")
     list_filter = ("status", "request_date")
     search_fields = ("pet__name", "adopter__first_name", "adopter__last_name")
