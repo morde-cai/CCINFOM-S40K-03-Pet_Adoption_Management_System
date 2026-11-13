@@ -185,3 +185,7 @@ INSERT INTO pet_adoption_adoption (id, pet_id, adopter_id, staff_id, request_dat
 (28, 5, 2, 6, '2026-08-31', NULL, 'pending'),
 (29, 19, 16, 1, '2026-09-28', '2026-10-13', 'completed'),
 (30, 15, 8, 1, '2024-12-15', '2024-12-19', 'completed');
+
+-- Reconcile pet status with adoption outcomes (For adopted and deceased)
+UPDATE pet_adoption_pet SET status = 'adopted' WHERE id IN (1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 15, 16, 17, 18, 19);
+UPDATE pet_adoption_pet SET status = 'deceased' WHERE id IN (43, 44, 45, 46);
