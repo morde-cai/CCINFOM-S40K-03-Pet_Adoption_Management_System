@@ -94,7 +94,7 @@ INSERT INTO pet_adoption_pet (id, name, breed_id, status, shelter_id, sex, date_
 (38, 'Bantay', 9, 'in-shelter', 3, 'male', '2020-12-20', 11.7, '2026-11-01', 'Calm and affectionate lap companion.'),
 (39, 'Duke', 5, 'in-shelter', 3, 'female', '2021-09-10', 33.0, '2025-06-15', 'Calm and affectionate lap companion.'),
 (40, 'Buddy', 8, 'in-shelter', 3, 'female', '2020-12-15', 11.4, '2025-05-07', 'Loves belly rubs and long walks.'),
-(41, 'Coco', 2, 'in-shelter', 3, 'male', '2026-01-22', 27.3, '2026-01-19', 'Energetic and loves to play fetch.'),
+(41, 'Coco', 2, 'in-shelter', 3, 'male', '2026-01-22', 27.3, '2026-01-23', 'Energetic and loves to play fetch.'),
 (42, 'Mocha 42', 5, 'in-shelter', 5, 'female', '2018-06-18', 26.3, '2024-07-11', 'Loves belly rubs and long walks.'),
 (43, 'Mittens', 3, 'in-shelter', 5, 'male', '2023-12-03', 15.4, '2026-04-07', 'Vaccinated and dewormed, ready for a new home.'),
 (44, 'Lucy', 4, 'in-shelter', 5, 'female', '2016-03-20', 12.2, '2026-07-28', 'A bit timid around strangers but loyal once bonded.'),
