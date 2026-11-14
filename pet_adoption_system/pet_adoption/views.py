@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.utils import timezone
 
 from .models import *
-
+from .adoptions_intake_report import *
 
 def _last_months(today, n=6):
     """First day of each of the last n months, oldest first (current month last)."""
@@ -23,7 +23,9 @@ def _monthly_counts(queryset, field, start):
             .annotate(m=TruncMonth(field)).values("m").annotate(n=Count("id")).order_by())
     return {(r["m"].date() if isinstance(r["m"], datetime) else r["m"]): r["n"] for r in rows}
 
-
+# -------------------------------------------------------------------
+# DASHBOARD
+# -------------------------------------------------------------------
 def dashboard(request):
     today = timezone.localdate()
 
@@ -87,12 +89,26 @@ def new_adoption(request):
 def adoption_list(request):
     return render(request, "adoptions.html")
 
+# -------------------------------------------------------------------
+# Report 1: Adoptions vs Intake Report
+# -------------------------------------------------------------------
 def adoption_intake_report(request):
-    today = timezone.localdate()  # defaults until the year/month selector is built
-    return render(request, "adoption_intake_report.html", {
-        "selected_year": today.year,
-        "selected_month_name": today.strftime("%B"),
-    })
+    years = available_years()
+    available_months = [(0, "All months")] + list(enumerate(calendar.month_name))[1:13]
+
+    # Get the user's selected year and month
+    selected_year = int(request.GET.get("year", years[-1]))
+    selected_month = int(request.GET.get("month", 0))
+
+    # Build the report:
+    report = built_adoptions_intake(selected_year, selected_month)
+
+    context = {
+        "years": years,
+        "months": available_months,
+        **report
+    }
+    return render(request, "adoption_intake_report.html", context)
 
 def staff_report(request):
     return render(request, "staff_report.html", {"selected_year": timezone.localdate().year})
