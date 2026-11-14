@@ -41,8 +41,7 @@ def available_years():
     return available_years
 
 '''
-Retrieves the count of rows per species into a query set,
-then it directly transforms it into a dictionary. 
+Turns the query set of the count per species and transforms it into a dictionary. 
 '''
 def species_counts(intakes, adoptions):
     # Get the intake counts per species:
