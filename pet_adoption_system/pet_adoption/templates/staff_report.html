@@ -64,8 +64,8 @@
                             <td>{{ staff.role.role_name }}</td>
                             <td>{{ staff.shelter.shelter_name }}</td>
                             <td>
-                                <span class="badge rounded-pill
-                                    {% if staff.status == 'active' %}text-bg-success
+                                <span class="badge rounded-3
+                                    {% if staff.status == 'active' %}text-bg-primary
                                     {% elif staff.status == 'on-leave' %}text-bg-warning
                                     {% else %}text-bg-secondary{% endif %}">
                                     {{ staff.get_status_display }}
