@@ -5,14 +5,54 @@
 
 <!-- Top nav bar (header + button)-->
 {% block topnav_breadcrumb %}Paws Adoption / Adoptions &amp; Intake Report {% endblock %}
-{% block topnav_head %} Adoptions &amp; Intake Summary Report ({{ selected_month_name }} {{ selected_year }}) {% endblock %}
+{% block topnav_head %} Adoptions &amp; Intake Report ({{ period_label }}) {% endblock %}
+
 {% block header_actions %}
-    <button type="button" id="downloadIntakePdfBtn" class="btn btn-sm btn-primary fw-semibold text-nowrap">
-        <img src="{% static 'images/icons/download.svg' %}" alt="" width="16" height="16">
-        Download as PDF
-    </button>
+    <form method="get" class="d-flex flex-wrap align-items-center gap-2">
+        <label for="yearSelect" class="text-body-secondary mb-0 text-nowrap">Year</label>
+        <select id="yearSelect" name="year" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+            {% for year in years %}
+                <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="monthSelect" class="text-body-secondary mb-0 text-nowrap">Month</label>
+        <select id="monthSelect" name="month" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+            {% for month in months %}
+                <option value="{{ month.0 }}" {% if month.0 == selected_month %}selected{% endif %}>{{ month.1 }}</option>
+            {% endfor %}
+        </select>
+    </form>
 {% endblock %}
 
 {% block content %}
-    <div class="page-card p-4 text-body-secondary">Report content will be placed here.</div>
+    <!-- KPI Cards -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3 mb-4">
+        {% for kpi in kpis %}
+            <div class="col">{% include "_kpi_card.html" %}</div>
+        {% endfor %}
+    </div>
+
+    <!-- Report Chart -->
+    <div class="row g-3">
+        <div class="col-12">
+            <div class="page-card p-4">
+                <h3 class="h6 fw-bold mb-4">Taken in vs. Adopted <span class="fw-normal small text-body-secondary ms-1">by species</span></h3>
+                <div class="chart-box"><canvas id="speciesChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ chart_data|json_script:"species-data" }}
+    <script src="{% static 'js/charts.js' %}"></script>
+    <script>
+        renderReport1Chart({
+            canvasId: "speciesChart",
+            dataId: "species-data",
+            labelA: "Taken in",
+            labelB: "Adopted",
+        });
+    </script>
 {% endblock %}

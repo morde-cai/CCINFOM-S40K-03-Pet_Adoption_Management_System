@@ -249,9 +249,17 @@ body {
 }
 
 /* Chart.js needs a sized, positioned parent to fill */
+.min-w-0 {
+  min-width: 0;
+}
 .chart-box {
   position: relative;
+  width: 100%;
+  min-width: 0;
   height: 20rem;
+}
+.chart-box canvas {
+  max-width: 100%;
 }
 
 pagination {
