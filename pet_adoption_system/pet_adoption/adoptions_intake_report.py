@@ -80,7 +80,7 @@ def kpi(intakes, adoptions, period_label):
     kpis = [
         {"label": "Total pets adopted", "value": adoption_count, "icon": "gift.svg", "sub": period_label},
         {"label": "Total pets taken in", "value": intake_count, "icon": "box-open.svg", "sub": period_label},
-        {"label": "Ratio of Adopted to Intakes", "value": ratio, "icon": "box-open.svg", "sub": period_label},
+        {"label": "Ratio of Adopted to Intakes", "value": ratio, "icon": "percent.svg", "sub": period_label},
     ]
 
     return kpis
