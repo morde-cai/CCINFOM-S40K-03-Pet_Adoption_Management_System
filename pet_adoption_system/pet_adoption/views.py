@@ -4,9 +4,15 @@ from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
 from django.shortcuts import render
 from django.utils import timezone
+from django.core.paginator import Paginator
 
 from .models import *
 from .adoptions_intake_report import *
+
+# Use for multiple top performers
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
+
 
 def _last_months(today, n=6):
     """First day of each of the last n months, oldest first (current month last)."""
@@ -110,5 +116,103 @@ def adoption_intake_report(request):
     }
     return render(request, "adoption_intake_report.html", context)
 
+# Staff Adoptions Report
+
+def _requested_year(request):
+    year_param = request.GET.get('year')
+    if not year_param or not year_param.isdigit():
+        return date.today().year
+    return int(year_param)
+
+STAFF_PAGE_SIZE = 100 # limit to 100 at a time so it doesnt load all of the DB's records
+STAFF_CHART_SIZE = 10 # max number of staff for the chart
+
 def staff_report(request):
-    return render(request, "staff_report.html", {"selected_year": timezone.localdate().year})
+    year = _requested_year(request)
+
+    completed = Adoption.objects.filter(status=AdoptionStatus.COMPLETED, adoption_date__isnull=False)
+    available_years = [d.year for d in completed.dates("adoption_date", "year", order="DESC")]
+    if year not in available_years:
+        available_years = sorted(available_years + [year], reverse=True)
+
+    # Filter adoptions by status and year
+    # MYSQL: WHERE status = 'Completed' AND YEAR(adoption_date) = <year>
+    handled_in_year = Q(
+                        adoptions__status = AdoptionStatus.COMPLETED, adoptions__adoption_date__year = year
+    )
+
+    """
+    SELECT s.id, s.first_name, s.last_name, COUNT(a.id) AS pets_handled
+    FROM staff s
+    LEFT JOIN adoptions a 
+        ON s.id = a.staff_id
+            AND a.status = 'COMPLETED'
+            AND a.adoption_date BETWEEN <year_first_day> AND <year_last_day>
+    GROUP BY
+        s.id, s.last_name, s.first_name
+    ORDER BY
+        pets_handled DESC, s.last_name ASC, s.first_name ASC;
+    """
+
+    ranks = (
+        Staff.objects.select_related("role", "shelter")
+        .annotate(pets_handled=Count("adoptions", filter=handled_in_year))
+        .order_by("-pets_handled", "last_name", "first_name", "id")
+    )
+
+    # Chart
+    top_ten = list(ranks[:STAFF_CHART_SIZE])
+    chart_data = {
+        "labels": [str(staff) for staff in top_ten],
+        "values": [staff.pets_handled for staff in top_ten],
+    }
+
+    # Table
+    paginator = Paginator(ranks, STAFF_PAGE_SIZE)
+    page_obj = paginator.get_page(request.GET.get("page"))
+    page_range = list(paginator.get_elided_page_range(page_obj.number, on_each_side=1, on_ends=1))
+
+    previous_pets_handled = None
+    previous_rank = None
+    for position, staff in enumerate(page_obj, start=page_obj.start_index()):
+        if staff.pets_handled == previous_pets_handled:
+            staff.rank = previous_rank
+        else:
+            staff.rank = position
+            previous_rank = position
+        previous_pets_handled = staff.pets_handled
+
+    # Total count per year
+    total_handled = sum(staff.pets_handled for staff in ranks)
+    top = top_ten[0] if top_ten and top_ten[0].pets_handled else None
+
+    # Calculates the top Perfomer
+    top_pets_handled = top_ten[0].pets_handled if top_ten else 0
+    top_performers = ([staff for staff in ranks if staff.pets_handled == top_pets_handled] if top_pets_handled else [])
+
+
+    kpis = [
+        {"label": f"Total Adoptions Handled in {year}", 
+         "value": total_handled,
+         "icon": "paw.svg",
+         "sub": f"Completed across {paginator.count} staff members"},
+
+        {"label": "Top Performer" if len(top_performers) == 1 else "Top Performers", 
+         "value": mark_safe(",<br>".join(escape(str(staff)) for staff in top_performers)) if top_performers else "No adoptions yet",
+         "icon": "gift.svg",
+         "sub": f"Handled {top_pets_handled} adoptions in {year}" if top_performers else f"No completed adoptions in {year}"},
+
+        {"label": "Staff on Record", 
+         "value": paginator.count, "icon": 
+         "staffs.svg",
+         "sub": "across all shelters"},
+    ]
+
+    return render(request, "staff_report.html", {
+        "selected_year": year,
+        "available_years": available_years,
+        "page_obj": page_obj,
+        "kpis": kpis,
+        "chart_data": chart_data,
+        "page_range": page_range,
+    })

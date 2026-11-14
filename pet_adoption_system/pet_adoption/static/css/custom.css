@@ -261,3 +261,23 @@ body {
 .chart-box canvas {
   max-width: 100%;
 }
+
+pagination {
+  --bs-pagination-bg: transparent;
+  --bs-pagination-border-width: 0;
+  --bs-pagination-border-radius: 50%;
+  --bs-pagination-hover-bg: var(--brand-100);
+  --bs-pagination-active-bg: var(--brand-600);
+  --bs-pagination-active-border-color: var(--brand-600);
+  --bs-pagination-active-color: var(--bs-body-bg);
+  --bs-pagination-disabled-bg: transparent;
+  gap: 0.25rem;
+}
+.pagination .page-link {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
