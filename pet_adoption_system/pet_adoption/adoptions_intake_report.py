@@ -29,10 +29,11 @@ def available_years():
     
     # Available years = Earliest record's year -> this year
     available_years = range(
-        earliest_date.year,
-        timezone.localdate().year + 1
+        timezone.localdate().year,
+        earliest_date.year - 1,
+        -1
     )
-
+    
     return available_years
 
 def species_counts(intakes, adoptions):
