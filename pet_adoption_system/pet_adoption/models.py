@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -79,14 +80,19 @@ class Pet(models.Model):
     description = models.TextField(
         blank=True, help_text="Personality, health notes, and anything adopters should know."
     )
- 
+
+    def clean(self):
+        count = Pet.objects.filter(shelter=self.shelter).count()
+        if count >= self.shelter.capacity:
+            raise ValidationError("This shelter is already full.")
+            
     def __str__(self):
         return self.name
 
 # -------------------------------------------------------------------
 # Staff Tables
 # -------------------------------------------------------------------
-class StaffRole(models.Model):
+class StaffRole(models.Model):#
     id = models.AutoField(primary_key=True)
     role_name = models.CharField(max_length=20, unique=True)
  
