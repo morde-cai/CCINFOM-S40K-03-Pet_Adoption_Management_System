@@ -75,7 +75,7 @@ def kpi(intakes, adoptions, period_label):
     if intake_count == 0:
         ratio = "0.00%"
     else:
-        ratio = f"{round(adoption_count / intake_count, 2):.2f}%"
+        ratio = f"{round(adoption_count / intake_count*100, 2):.2f}%"
 
     kpis = [
         {"label": "Total pets adopted", "value": adoption_count, "icon": "gift.svg", "sub": period_label},
