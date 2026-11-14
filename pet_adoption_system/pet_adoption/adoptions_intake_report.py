@@ -73,7 +73,7 @@ def kpi(intakes, adoptions, period_label):
     intake_count = intakes.count()
     adoption_count = adoptions.count()
     if intake_count == 0:
-        ratio = "0.00%"
+        ratio = "Zero Intakes"
     else:
         ratio = f"{round(adoption_count / intake_count*100, 2):.2f}%"
 
