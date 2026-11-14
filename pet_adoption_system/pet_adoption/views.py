@@ -96,7 +96,7 @@ def adoption_list(request):
     return render(request, "adoptions.html")
 
 # -------------------------------------------------------------------
-# Report 1: Adoptions vs Intake Report
+# Report 1: Adoptions vs Intake
 # -------------------------------------------------------------------
 def adoption_intake_report(request):
     years = available_years()
@@ -112,11 +112,15 @@ def adoption_intake_report(request):
     context = {
         "years": years,
         "months": available_months,
+        "selected_year": selected_year,
+        "selected_month": selected_month,
         **report
     }
     return render(request, "adoption_intake_report.html", context)
 
-# Staff Adoptions Report
+# -------------------------------------------------------------------
+# Report 2: Staff Adoptions
+# -------------------------------------------------------------------
 
 def _requested_year(request):
     year_param = request.GET.get('year')
