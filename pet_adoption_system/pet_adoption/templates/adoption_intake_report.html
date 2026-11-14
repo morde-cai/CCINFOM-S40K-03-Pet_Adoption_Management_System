@@ -33,26 +33,50 @@
         {% endfor %}
     </div>
 
-    <!-- Report Chart -->
+    
     <div class="row g-3">
-        <div class="col-12">
+        <!-- Report Intake vs Adopted Bar Chart -->
+        <div class="col-lg-6">
             <div class="page-card p-4">
                 <h3 class="h6 fw-bold mb-4">Taken in vs. Adopted <span class="fw-normal small text-body-secondary ms-1">by species</span></h3>
-                <div class="chart-box"><canvas id="speciesChart"></canvas></div>
+                <div class="chart-box"><canvas id="barChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Species Intake and Adopted Pie Charts -->
+        <div class="col-lg-3">
+            <div class="page-card p-4">
+                <h3 class="h6 fw-bold mb-4">Taken in <span class="fw-normal small text-body-secondary ms-1">by species</span></h3>
+                <div class="chart-box"><canvas id="intakeDonut"></canvas></div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="page-card p-4">
+                <h3 class="h6 fw-bold mb-4">Adopted <span class="fw-normal small text-body-secondary ms-1">by species</span></h3>
+                <div class="chart-box"><canvas id="adoptionDonut"></canvas></div>
             </div>
         </div>
     </div>
+
+    
 {% endblock %}
 
 {% block extra_js %}
-    {{ chart_data|json_script:"species-data" }}
+    <!-- Prepare the data from views.py: -->
+    {{ bar_data|json_script:"bar-data" }}
+    {{ intake_donut_data|json_script:"intake-donut-data" }}
+    {{ adoption_donut_data|json_script:"adoption-donut-data" }}
+
+    <!-- Render the charts from static/js/charts.js -->
     <script src="{% static 'js/charts.js' %}"></script>
     <script>
-        renderReport1Chart({
-            canvasId: "speciesChart",
-            dataId: "species-data",
-            labelA: "Taken in",
-            labelB: "Adopted",
+        renderReport1_Bar({
+            canvasId: "barChart",
+            dataId: "bar-data",
         });
+        renderReport1_Donuts([
+            {canvasId: "intakeDonut", dataId: "intake-donut-data"},
+            {canvasId: "adoptionDonut", dataId: "adoption-donut-data"},
+        ]);
     </script>
 {% endblock %}

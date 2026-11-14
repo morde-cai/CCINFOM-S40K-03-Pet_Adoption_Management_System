@@ -35,7 +35,7 @@ def available_years():
 
     return available_years
 
-def species_charts_data(intakes, adoptions):
+def species_counts(intakes, adoptions):
     # Get the intake counts per species:
     # Dict of {species name: row count}
     intake_species = {}
@@ -47,7 +47,10 @@ def species_charts_data(intakes, adoptions):
     adoption_species = {}
     for row in adoptions.values("pet__breed__species__name").annotate(total=Count("id")):
         adoption_species[row["pet__breed__species__name"]] = row["total"]
-        
+
+    return intake_species, adoption_species
+
+def bar_chart_data(intake_species, adoption_species):    
     # 1. Prepare the charts label list:
     species_list = []
     for species in intake_species:
@@ -67,6 +70,18 @@ def species_charts_data(intakes, adoptions):
         "labels": species_list,
         "intake": intake_list,
         "adopted": adopted_list,
+    }
+
+# Get intake and adoptions donut chart data
+def intake_donut_data(intake_species):
+    return {
+        "labels": list(intake_species.keys()), 
+        "data": list(intake_species.values())
+    }
+def adoption_donut_data(adoption_species):
+    return {
+        "labels": list(adoption_species.keys()), 
+        "data": list(adoption_species.values())
     }
 
 def kpi(intakes, adoptions, period_label):
@@ -106,10 +121,17 @@ def built_adoptions_intake(selected_year, selected_month):
 
     kpis = kpi(intakes, adoptions, period_label)
     
-    chart_data = species_charts_data(intakes, adoptions)
+    # Get the dict of {species_name: count}
+    intake_species, adoption_species = species_counts(intakes, adoptions)
+
+    bar_data = bar_chart_data(intake_species, adoption_species)
+    intake_donut = intake_donut_data(intake_species)
+    adoption_donut = adoption_donut_data(adoption_species)
 
     return {
         "period_label": period_label,
         "kpis": kpis,
-        "chart_data": chart_data
+        "bar_data": bar_data,
+        "intake_donut_data": intake_donut,
+        "adoption_donut_data": adoption_donut 
     }
