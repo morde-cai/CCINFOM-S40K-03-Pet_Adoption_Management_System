@@ -103,7 +103,7 @@ def adoption_intake_report(request):
     available_months = [(0, "All months")] + list(enumerate(calendar.month_name))[1:13]
 
     # Get the user's selected year and month
-    selected_year = int(request.GET.get("year", years[-1]))
+    selected_year = int(request.GET.get("year", years[0]))
     selected_month = int(request.GET.get("month", 0))
 
     # Build the report:
