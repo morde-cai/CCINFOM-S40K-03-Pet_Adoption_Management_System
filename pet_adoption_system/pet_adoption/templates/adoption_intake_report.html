@@ -48,7 +48,7 @@
     {{ chart_data|json_script:"species-data" }}
     <script src="{% static 'js/charts.js' %}"></script>
     <script>
-        renderVsBarChart({
+        renderReport1Chart({
             canvasId: "speciesChart",
             dataId: "species-data",
             labelA: "Taken in",
