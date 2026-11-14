@@ -31,7 +31,7 @@ body {
   --bs-link-hover-color: #0f5a55;
   --bs-border-color: #ddf3f1;
 
-  /* Your layout variables */
+  /* Layout variables */
   --sidebar-bg: #f2faf9;
   --sidebar-border: #ddf3f1;
   --nav-text: #5e7270;
@@ -44,6 +44,10 @@ body {
   --account-bg: #ddf3f1;
   --brand-icon-filter: invert(1);
   --nav-icon-filter: none;
+
+  /* Bar Charts */
+  --bar-1: #14706a;
+  --bar-2: #0f3d3a;
 }
 
 /* Dark theme global variables */
@@ -64,7 +68,7 @@ body {
   --bs-link-hover-color: #8fd3cd;
   --bs-border-color: #272b30;
 
-  /* Your layout variables (original greys) */
+  /* Layout variables (original greys) */
   --sidebar-bg: #1a1d1f;
   --sidebar-border: #272b30;
   --nav-text: #6f767e;
@@ -77,6 +81,10 @@ body {
   --account-bg: #272b30;
   --brand-icon-filter: none;
   --nav-icon-filter: invert(1);
+
+  /* Bar Charts */
+  --bar-1: #e6f4f3;
+  --bar-2: #14706a;
 }
 
 /* Primary button (Bootstrap 5.3 variables) */
@@ -140,7 +148,6 @@ body {
   justify-content: center;
   flex-shrink: 0;
 }
-
 .brand-name {
   font-size: 1.15rem;
   font-weight: 700;
