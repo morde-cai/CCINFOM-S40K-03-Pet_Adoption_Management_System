@@ -10,6 +10,10 @@ from .models import *
 # HELPER Functions
 # -----------------------------------------------------------------------------------
 
+'''
+Takes the earliest year among all adoptions and intakes, then
+it returns a range from that year up to present year. 
+'''
 def available_years():
     # Get the earliest completed adoption.
     earliest_adoption = Adoption.objects.filter (
@@ -36,6 +40,10 @@ def available_years():
     
     return available_years
 
+'''
+Retrieves the count of rows per species into a query set,
+then it directly transforms it into a dictionary. 
+'''
 def species_counts(intakes, adoptions):
     # Get the intake counts per species:
     # Dict of {species name: row count}
@@ -51,6 +59,10 @@ def species_counts(intakes, adoptions):
 
     return intake_species, adoption_species
 
+'''
+This transforms dictionaries of {species: count} into data lists 
+for bar charts (Charts.js).
+'''
 def bar_chart_data(intake_species, adoption_species):    
     # 1. Prepare the charts label list:
     species_list = []
@@ -73,7 +85,10 @@ def bar_chart_data(intake_species, adoption_species):
         "adopted": adopted_list,
     }
 
-# Get intake and adoptions donut chart data
+'''
+These transform dictionaries of {species: count} into data lists 
+for doughnut charts (Charts.js).
+'''
 def intake_donut_data(intake_species):
     return {
         "labels": list(intake_species.keys()), 
@@ -85,6 +100,9 @@ def adoption_donut_data(adoption_species):
         "data": list(adoption_species.values())
     }
 
+'''
+KPI card data.
+'''
 def kpi(intakes, adoptions, period_label):
     intake_count = intakes.count()
     adoption_count = adoptions.count()
