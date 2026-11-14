@@ -30,11 +30,13 @@ function themeColors() {
   const css = getComputedStyle(document.documentElement);
   const v = (name) => css.getPropertyValue(name).trim();
   return {
-    primary: v('--brand-600'),
-    primaryDark: v('--brand-700'),
+    primary: v('--bar-1'),
+    primaryDark: v('--bar-2'),
     tint: v('--brand-100'),
     strong: v('--brand-900'),  // dark teal in light mode, near-white in dark mode
     text: v('--bs-body-color'),
     grid: v('--bs-border-color'),
+    bar_1: v("--bar-1"),
+    bar_2: v("--bar-2")
   };
 }
