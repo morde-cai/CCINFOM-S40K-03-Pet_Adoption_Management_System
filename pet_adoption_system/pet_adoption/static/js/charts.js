@@ -34,7 +34,7 @@ function renderDashboard_bar(canvasId, dataId) {
         chart.options.scales.y.ticks.color = c.text;
         chart.options.scales.y.grid.color = c.grid;
         chart.options.plugins.legend.labels.color = c.text;
-        chart.update('none');
+        chart.update('resize');
     }
     applyChartTheme();
     document.addEventListener('themechange', applyChartTheme);
