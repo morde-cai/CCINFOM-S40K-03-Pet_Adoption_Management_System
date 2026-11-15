@@ -20,7 +20,7 @@ def _dashboard_kpis():
 
     # Adoption Requests KPI
     available_adoptions = Pet.objects.filter(status=PetStatus.IN_SHELTER).count()
-    open_requests = Adoption.objects.filter(status=AdoptionStatus.PENDING).count()
+    open_requests = Adoption.objects.filter(status__in=[AdoptionStatus.APPROVED, AdoptionStatus.PENDING]).count()
 
     # Intake KPI
     intake_month = Pet.objects.filter(intake_date__year=present.year,
@@ -39,7 +39,13 @@ def _dashboard_kpis():
     # Shelter KPI
     in_shelter = available_adoptions
     capacity = Shelter.objects.aggregate(total=Sum("capacity"))["total"]
-
+    if capacity is None:
+        capacity = 0
+    if capacity == 0:
+        shelter_percent = "No Capacity"
+    else:
+        shelter_percent = round(in_shelter / capacity * 100)
+        
     # Active Staff KPI
     active_staff = Staff.objects.filter(status=StaffStatus.ACTIVE).count()
 
@@ -54,7 +60,7 @@ def _dashboard_kpis():
         {"label": "Pending requests", "value": pending_requests, "icon": "calendar.svg",
             "sub": "Waiting for a decision"},
         {"label": "Shelter occupancy", "value": f"{in_shelter} / {capacity}", "icon": "shelter.svg",
-            "sub": f"{round(in_shelter / capacity * 100) if capacity else 0}% full"},
+            "sub": f"{shelter_percent}% full"},
         {"label": "Active staff", "value": active_staff, "icon": "staffs.svg", "sub": "Currently working"},
     ]
 
