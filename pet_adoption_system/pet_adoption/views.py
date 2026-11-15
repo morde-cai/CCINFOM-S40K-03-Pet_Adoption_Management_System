@@ -189,10 +189,10 @@ def new_adoption(request):
 
     return render(request, "new_adoption.html", {
         "pets": Pet.objects.filter(status=PetStatus.IN_SHELTER),
-        "adopters": Adopter.objects.all(),
+        "adopters": Adopter.objects.order_by("first_name", "last_name"),
         "staff_members": Staff.objects.filter(
             status=StaffStatus.ACTIVE
-        ),
+        ).order_by("first_name", "last_name"),
         "statuses": AdoptionStatus.choices,
         "error": error,
     })
@@ -249,6 +249,7 @@ def adoption_list(request):
         "selected_staff": selected_staff,
         "selected_date": selected_date,
     })
+
 def edit_adoption(request, pk):
     adoption = Adoption.objects.select_related("pet").filter(pk=pk).first()
 
