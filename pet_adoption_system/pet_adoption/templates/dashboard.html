@@ -26,7 +26,7 @@
         <div class="col-lg-7">
             <div class="page-card p-4 h-100">
                 <h3 class="h6 fw-bold mb-4">Taken in vs. Adopted <span class="fw-normal small text-body-secondary ms-1">last 6 months</span></h3>
-                <div class="chart-box"><canvas id="intakeChart" aria-label="Bar chart of pets taken in and adopted per month" role="img"></canvas></div>
+                <div class="chart-box"><canvas id="adopted_intake_chart" aria-label="Bar chart of pets taken in and adopted per month" role="img"></canvas></div>
             </div>
         </div>
         <div class="col-lg-5">
@@ -46,42 +46,8 @@
 
 {% block extra_js %}
 {{ chart_data|json_script:"chartData" }}
-<script>
-    const chartData = JSON.parse(document.getElementById('chartData').textContent);
-    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;  // same font stack as the site
-
-    const chart = new Chart(document.getElementById('intakeChart'), {
-        type: 'bar',
-        data: {
-            labels: chartData.labels,
-            datasets: [
-                { label: 'Taken in', data: chartData.intake, borderRadius: 6 },
-                { label: 'Adopted', data: chartData.adopted, borderRadius: 6 },
-            ],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: { ticks: {}, grid: { display: false } },
-                y: { ticks: { precision: 0 }, grid: {}, beginAtZero: true, suggestedMax: 5 },
-            },
-            plugins: { legend: { labels: {} } },
-        },
-    });
-
-    // Colors come from custom.css (themeColors in custom.js), so the chart follows light/dark mode.
-    function applyChartTheme() {
-        const c = themeColors();
-        chart.data.datasets[0].backgroundColor = c.primary;
-        chart.data.datasets[1].backgroundColor = c.strong;
-        chart.options.scales.x.ticks.color = c.text;
-        chart.options.scales.y.ticks.color = c.text;
-        chart.options.scales.y.grid.color = c.grid;
-        chart.options.plugins.legend.labels.color = c.text;
-        chart.update('none');
-    }
-    applyChartTheme();
-    document.addEventListener('themechange', applyChartTheme);
-</script>
+    <script src="{% static 'js/charts.js' %}"></script>
+    <script>
+        renderDashboard_bar("adopted_intake_chart", "chartData");
+    </script>
 {% endblock %}

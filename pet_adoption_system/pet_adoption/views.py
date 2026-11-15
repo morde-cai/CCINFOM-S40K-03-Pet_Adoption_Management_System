@@ -1,7 +1,6 @@
-from datetime import date, datetime
+from datetime import date
 
-from django.db.models import Count, Q
-from django.db.models.functions import TruncMonth
+from django.db.models import Count, Q, Sum
 from django.shortcuts import render
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -13,87 +12,137 @@ from .adoptions_intake_report import *
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
-
-def _last_months(today, n=6):
-    """First day of each of the last n months, oldest first (current month last)."""
-    months, year, month = [], today.year, today.month
-    for _ in range(n):
-        months.append(date(year, month, 1))
-        year, month = (year - 1, 12) if month == 1 else (year, month - 1)
-    return months[::-1]
-
-
-def _monthly_counts(queryset, field, start):
-    """{first day of month: row count} for rows whose `field` date is on/after `start`."""
-    rows = (queryset.filter(**{f"{field}__gte": start})
-            .annotate(m=TruncMonth(field)).values("m").annotate(n=Count("id")).order_by())
-    return {(r["m"].date() if isinstance(r["m"], datetime) else r["m"]): r["n"] for r in rows}
-
 # -------------------------------------------------------------------
 # DASHBOARD
 # -------------------------------------------------------------------
-def dashboard(request):
-    today = timezone.localdate()
+def _dashboard_kpis():
+    present = timezone.localdate()
 
-    # Occupancy = pets currently in the shelter (adopted/deceased pets don't take a spot).
-    shelters = list(
-        Shelter.objects.annotate(
-            occupancy=Count("pets", filter=Q(pets__status=PetStatus.IN_SHELTER))
-        )
-    )
-    for shelter in shelters:
-        shelter.percent = min(round(shelter.occupancy / shelter.capacity * 100), 100) if shelter.capacity else 0
-        shelter.bar_class = "text-bg-danger" if shelter.percent >= 90 else "text-bg-warning" if shelter.percent >= 70 else ""
-    shelters.sort(key=lambda s: (-s.percent, s.shelter_name))  # fullest first
+    # Adoption Requests KPI
+    available_adoptions = Pet.objects.filter(status=PetStatus.IN_SHELTER).count()
+    open_requests = Adoption.objects.filter(status=AdoptionStatus.PENDING).count()
 
-    in_shelter = sum(s.occupancy for s in shelters)
-    capacity = sum(s.capacity for s in shelters)
+    # Intake KPI
+    intake_month = Pet.objects.filter(intake_date__year=present.year,
+        intake_date__month = present.month).count()
+    intake_year = Pet.objects.filter(intake_date__year = present.year).count()
 
-    month, year = {"intake_date__year": today.year, "intake_date__month": today.month}, {"intake_date__year": today.year}
-    intake = Pet.objects.aggregate(month=Count("id", filter=Q(**month)), year=Count("id", filter=Q(**year)))
-    done = Q(status=AdoptionStatus.COMPLETED)
-    adoptions = Adoption.objects.aggregate(
-        pending=Count("id", filter=Q(status=AdoptionStatus.PENDING)),
-        month=Count("id", filter=done & Q(adoption_date__year=today.year, adoption_date__month=today.month)),
-        year=Count("id", filter=done & Q(adoption_date__year=today.year)),
-    )
-    with_open_request = Pet.objects.filter(
-        status=PetStatus.IN_SHELTER,
-        adoptions__status__in=[AdoptionStatus.PENDING, AdoptionStatus.APPROVED],
-    ).distinct().count()
+    # Adopted KPI
+    adopted_month = Adoption.objects.filter(status=AdoptionStatus.COMPLETED, 
+        adoption_date__year=present.year, adoption_date__month=present.month).count()
+    adopted_year = Adoption.objects.filter(status=AdoptionStatus.COMPLETED, 
+        adoption_date__year = present.year).count()
+
+    # Pending KPI
+    pending_requests = Adoption.objects.filter(status=AdoptionStatus.PENDING).count()
+
+    # Shelter KPI
+    in_shelter = available_adoptions
+    capacity = Shelter.objects.aggregate(total=Sum("capacity"))["total"]
+
+    # Active Staff KPI
     active_staff = Staff.objects.filter(status=StaffStatus.ACTIVE).count()
-
-    # Bar chart: pets taken in vs. adoptions completed, last 6 months.
-    months = _last_months(today)
-    intake_by_month = _monthly_counts(Pet.objects.all(), "intake_date", months[0])
-    adopted_by_month = _monthly_counts(Adoption.objects.filter(status=AdoptionStatus.COMPLETED), "adoption_date", months[0])
-    chart_data = {
-        "labels": [m.strftime("%b %Y") for m in months],
-        "intake": [intake_by_month.get(m, 0) for m in months],
-        "adopted": [adopted_by_month.get(m, 0) for m in months],
-    }
 
     # One dict per KPI card; dashboard.html loops over this list and renders _kpi_card.html for each.
     kpis = [
-        {"label": "Available for adoption", "value": in_shelter, "icon": "paw.svg",
-         "sub": f"{with_open_request} with an open request"},
-        {"label": "Taken in this month", "value": intake["month"], "icon": "box-open.svg",
-         "sub": f"{intake['year']} so far in {today.year}"},
-        {"label": "Adopted this month", "value": adoptions["month"], "icon": "gift.svg",
-         "sub": f"{adoptions['year']} so far in {today.year}"},
-        {"label": "Pending requests", "value": adoptions["pending"], "icon": "calendar.svg",
-         "sub": "Waiting for a decision"},
+        {"label": "Available for adoption", "value": available_adoptions, "icon": "paw.svg",
+            "sub": f"{open_requests} with an open request"},
+        {"label": "Taken in this month", "value": intake_month, "icon": "box-open.svg",
+            "sub": f"{intake_year} so far in {present.year}"},
+        {"label": "Adopted this month", "value": adopted_month, "icon": "gift.svg",
+            "sub": f"{adopted_year} so far in {present.year}"},
+        {"label": "Pending requests", "value": pending_requests, "icon": "calendar.svg",
+            "sub": "Waiting for a decision"},
         {"label": "Shelter occupancy", "value": f"{in_shelter} / {capacity}", "icon": "shelter.svg",
-         "sub": f"{round(in_shelter / capacity * 100) if capacity else 0}% full"},
+            "sub": f"{round(in_shelter / capacity * 100) if capacity else 0}% full"},
         {"label": "Active staff", "value": active_staff, "icon": "staffs.svg", "sub": "Currently working"},
     ]
-    return render(request, "dashboard.html", {"shelters": shelters, "kpis": kpis, "chart_data": chart_data})
 
+    return kpis
+
+def _dashboard_shelter():
+    # Get the count of pets per shelter:
+    # New object variable: Occupancy = pets in shelter (adopted/deceased pets don't take a spot).
+    shelters = list(
+        Shelter.objects.annotate(
+            # Use related name "pets" from models.py:
+            occupancy=Count("pets", filter=Q(pets__status=PetStatus.IN_SHELTER))
+        )
+    )
+
+    # Get the percantages (make new object variables: percent, bar_class):
+    for shelter in shelters:
+        if shelter.capacity:
+            shelter.percent = round(shelter.occupancy / shelter.capacity * 100)
+        else:
+            shelter.percent = 0
+
+        if shelter.percent >=90:
+            shelter.bar_class = "text-bg-danger"
+        elif shelter.percent >= 70:
+            shelter.bar_class = "text-bg-warning"
+        else:
+            shelter.bar_class = ""
+
+    # Sort by fullest first (percent in descending order), then name (in ascending order)
+    shelters.sort(key=lambda s: (-s.percent, s.shelter_name))
+
+    return shelters
+
+def _dashboard_bar():
+    present = timezone.localdate()
+    labels, intake, adopted = [], [], []
+
+    # go from 5 months ago up to this month
+    for i in range(5, -1, -1):
+        month = present.month - i
+        year = present.year
+
+        # If month is from last year:
+        if month <= 0:
+            month += 12
+            year -= 1
+
+        labels.append(date(year, month, 1).strftime("%b %Y"))
+        intake.append(Pet.objects.filter(
+            intake_date__year=year, intake_date__month=month).count())
+        adopted.append(Adoption.objects.filter(
+            status=AdoptionStatus.COMPLETED,
+            adoption_date__year=year, adoption_date__month=month).count())
+
+    chart_data = {
+        "labels": labels, 
+        "intake": intake,
+        "adopted": adopted
+    }
+
+    return chart_data
+    
+
+def dashboard(request):
+    shelters = _dashboard_shelter()    
+    kpis = _dashboard_kpis()
+    chart_data = _dashboard_bar()
+    
+    context = {
+        "shelters": shelters,
+        "kpis": kpis,
+        "chart_data": chart_data
+    }
+
+    return render(request, "dashboard.html", context)
+
+# -------------------------------------------------------------------
+# New Adoptions
+# -------------------------------------------------------------------
 def new_adoption(request):
     return render(request, "new_adoption.html")
 
-def adoption_list(request):
-    return render(request, "adoptions.html")
+# -------------------------------------------------------------------
+# New Pets
+# -------------------------------------------------------------------
+def new_pet(request):
+    return render(request, "new_pet.html")
 
 # -------------------------------------------------------------------
 # Report 1: Adoptions vs Intake
