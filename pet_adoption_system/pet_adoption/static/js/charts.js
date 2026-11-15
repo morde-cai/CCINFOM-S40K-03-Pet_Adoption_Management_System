@@ -74,7 +74,10 @@ function makeDonut(canvasId, dataId) {
     function applyChartTheme() {
         const c = themeColors();
         const isDark = document.documentElement.dataset.bsTheme === "dark";
-        const palette = isDark ? DONUT_COLORS_DARK : DONUT_COLORS_LIGHT;
+        if (isDark)
+            palette = DONUT_COLORS_DARK;
+        else
+            palette = DONUT_COLORS_LIGHT;
 
         const ds = chart.data.datasets[0];
         ds.backgroundColor = chartData.labels.map((_, i) => palette[i % palette.length]);
