@@ -26,12 +26,12 @@
 **Course:** CCINFOM | A.Y. 2026 - 2027 Term 1  
 **Instructor:** Dr. Payawal, Bryan O’Nomerp  
 
-| Name | Role / Contribution |
-|------|---------------------|
-| Aceveda, Jiahe    | DB Design, `TODO` |
-| Dy, Jasmine       | DB Design, `TODO` |
-| Nucum, Mark       | DB Design, `TODO` |
-| Pielago, James C. | DB Design, Backend & Frontend Development, Core Features, Documentation |
+| Name |
+|------|
+| Aceveda, Jiahe    | 
+| Dy, Jasmine       | 
+| Nucum, Mark       | 
+| Pielago, James C. | 
 
 
 
@@ -68,7 +68,6 @@ Managed records:
 | Charts                | Chart.js                       |
 | Records Management UI | Django Admin                   |
 | Custom UI             | Bootstrap 5 + Custom CSS / JS  |
-| PDF Generation        | `TODO`                         |
 | Config                | python-dotenv                  |
 | Environment           | venv                           | 
 
@@ -177,10 +176,10 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-### `TODO` 7. (Optional) Load sample data 
-
+### 7. (Optional) Load sample data 
+In CMD:
 ```bash
-python manage.py loaddata [fixture_file].json
+mysql -u root -p pet_adoption_db < seed_data.sql
 ```
 
 ### 8. Create an admin account
