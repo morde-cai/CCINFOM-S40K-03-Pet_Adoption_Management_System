@@ -378,7 +378,6 @@ def staff_report(request):
 
     # Total count per year
     total_handled = sum(staff.pets_handled for staff in ranks)
-    top = top_ten[0] if top_ten and top_ten[0].pets_handled else None
 
     # Calculates the top Perfomer
     top_pets_handled = top_ten[0].pets_handled if top_ten else 0
