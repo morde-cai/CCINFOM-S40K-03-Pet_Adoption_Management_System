@@ -42,7 +42,7 @@ def _dashboard_kpis():
     if capacity is None:
         capacity = 0
     if capacity == 0:
-        shelter_percent = "No Capacity"
+        shelter_percent = "0 Capacity"
     else:
         shelter_percent = round(in_shelter / capacity * 100)
         
