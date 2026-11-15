@@ -106,7 +106,40 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>
-</div>
+    </div>  {# end table-responsive #}
 
+    {% if adoptions.paginator.num_pages > 1 %}
+    <nav class="d-flex justify-content-between align-items-center mt-3" aria-label="Pagination">
+        <small class="text-body-secondary">
+            Showing {{ adoptions.start_index }}–{{ adoptions.end_index }} of {{ adoptions.paginator.count }}
+        </small>
+
+        <ul class="pagination pagination-sm mb-0">
+            {% if adoptions.has_previous %}
+                <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page=1">&laquo;</a></li>
+                <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ adoptions.previous_page_number }}">Prev</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                <li class="page-item disabled"><span class="page-link">Prev</span></li>
+            {% endif %}
+
+            {% for num in adoptions.paginator.page_range %}
+                {% if num == adoptions.number %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > adoptions.number|add:'-3' and num < adoptions.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if adoptions.has_next %}
+                <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ adoptions.next_page_number }}">Next</a></li>
+                <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ adoptions.paginator.num_pages }}">&raquo;</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
 {% endblock %}

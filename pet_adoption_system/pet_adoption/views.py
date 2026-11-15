@@ -231,15 +231,24 @@ def adoption_list(request):
         "first_name", "last_name"
     )
 
+    adoptions = adoptions.order_by("-request_date", "-pk")  # add -pk so the order is stable
+
+    paginator = Paginator(adoptions, 15)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
+    # keep the active filters in the page links
+    params = request.GET.copy()
+    params.pop("page", None)
+
     return render(request, "adoptions.html", {
-        "adoptions": adoptions.order_by("-request_date"),
+        "adoptions": page_obj,
+        "querystring": params.urlencode(),
         "staff_members": staff_members,
         "statuses": AdoptionStatus.choices,
         "selected_status": selected_status,
         "selected_staff": selected_staff,
         "selected_date": selected_date,
     })
-
 def edit_adoption(request, pk):
     adoption = Adoption.objects.select_related("pet").filter(pk=pk).first()
 
