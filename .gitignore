@@ -1,14 +1,8 @@
-# (Contributor) James' personal files:
-README_template.md
-README_staff_template.md
-
-# Other Files"
 venv/
 migrations/
 __pycache__/
 *.pyc
 db.sqlite3
-media/
 
 # Environmentals
 .env
