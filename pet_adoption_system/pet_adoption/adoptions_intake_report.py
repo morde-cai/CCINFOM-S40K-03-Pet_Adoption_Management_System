@@ -127,14 +127,15 @@ def built_adoptions_intake(selected_year, selected_month):
     adoptions = Adoption.objects.filter(
         status=AdoptionStatus.COMPLETED, adoption_date__year=selected_year
     )
-    period_label = str(selected_year) # Year label for KPIs
+
+    period_label = str(selected_year) # Year label
 
     # Get the intakes and adoptions at selected month:
     if selected_month: # If non-zero, meaning a specific month and not all months
         intakes = intakes.filter(intake_date__month=selected_month)
         adoptions = adoptions.filter(adoption_date__month=selected_month)
 
-        # Add month to label if it's not 0 (which means All Months)
+        # Add month to label
         period_label = f"{calendar.month_name[selected_month]} {selected_year}" 
 
     kpis = kpi(intakes, adoptions, period_label)
