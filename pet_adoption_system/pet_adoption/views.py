@@ -393,7 +393,7 @@ def staff_report(request):
 
         {"label": "Top Performer" if len(top_performers) == 1 else "Top Performers", 
          "value": mark_safe(",<br>".join(escape(str(staff)) for staff in top_performers)) if top_performers else "No adoptions yet",
-         "icon": "gift.svg",
+         "icon": "trophy.svg",
          "sub": f"Handled {top_pets_handled} adoptions in {year}" if top_performers else f"No completed adoptions in {year}"},
 
         {"label": "Staff on Record", 
