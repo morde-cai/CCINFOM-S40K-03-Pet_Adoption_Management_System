@@ -1,7 +1,7 @@
-from datetime import date
+from datetime import date, datetime
 
 from django.db.models import Count, Q, Sum
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.core.paginator import Paginator
 
@@ -118,7 +118,6 @@ def _dashboard_bar():
 
     return chart_data
     
-
 def dashboard(request):
     shelters = _dashboard_shelter()    
     kpis = _dashboard_kpis()
@@ -136,13 +135,145 @@ def dashboard(request):
 # New Adoptions
 # -------------------------------------------------------------------
 def new_adoption(request):
-    return render(request, "new_adoption.html")
+    error = ""
+
+    if request.method == "POST":
+        pet_id = request.POST.get("pet")
+        adopter_id = request.POST.get("adopter")
+        staff_id = request.POST.get("staff")
+        request_date = request.POST.get("request_date")
+        adoption_date = request.POST.get("adoption_date") or None
+        status = request.POST.get("status")
+
+        pet = Pet.objects.filter(
+            id=pet_id,
+            status=PetStatus.IN_SHELTER
+        ).first()
+
+        if not pet:
+            error = "This pet is not available for adoption."
+
+        elif Adoption.objects.filter(
+            pet_id=pet_id,
+            status__in=[
+                AdoptionStatus.PENDING,
+                AdoptionStatus.APPROVED,
+            ]
+        ).exists():
+            error = "This pet already has an active adoption request."
+
+        elif not Adopter.objects.filter(id=adopter_id).exists():
+            error = "Please select a valid adopter."
+
+        elif not Staff.objects.filter(
+            id=staff_id,
+            status=StaffStatus.ACTIVE
+        ).exists():
+            error = "Please select an active staff member."
+
+        else:
+            adoption = Adoption.objects.create(
+                pet=pet,
+                adopter_id=adopter_id,
+                staff_id=staff_id,
+                request_date=request_date,
+                adoption_date=adoption_date,
+                status=status,
+            )
+
+            if adoption.status == AdoptionStatus.COMPLETED:
+                pet.status = PetStatus.ADOPTED
+                pet.save(update_fields=["status"])
+
+            return redirect("adoption_list")
+
+    return render(request, "new_adoption.html", {
+        "pets": Pet.objects.filter(status=PetStatus.IN_SHELTER),
+        "adopters": Adopter.objects.all(),
+        "staff_members": Staff.objects.filter(
+            status=StaffStatus.ACTIVE
+        ),
+        "statuses": AdoptionStatus.choices,
+        "error": error,
+    })
 
 # -------------------------------------------------------------------
-# New Pets
+# Adoptions List and Edit Adoptions
 # -------------------------------------------------------------------
-def new_pet(request):
-    return render(request, "new_pet.html")
+def adoption_list(request):
+    adoptions = Adoption.objects.select_related(
+        "pet", "adopter", "staff"
+    ).all()
+
+    selected_status = request.GET.get("status", "")
+    selected_staff = request.GET.get("staff", "")
+    selected_date = request.GET.get("adoption_date", "")
+
+    if selected_status in dict(AdoptionStatus.choices):
+        adoptions = adoptions.filter(status=selected_status)
+    elif selected_status:
+        selected_status = ""
+
+    if selected_staff:
+        if selected_staff.isdigit():
+            adoptions = adoptions.filter(staff_id=selected_staff)
+        else:
+            selected_staff = ""
+
+    if selected_date:
+        try:
+            datetime.strptime(selected_date, "%Y-%m-%d")
+            adoptions = adoptions.filter(adoption_date=selected_date)
+        except ValueError:
+            selected_date = ""
+
+    staff_members = Staff.objects.all().order_by(
+        "first_name", "last_name"
+    )
+
+    return render(request, "adoptions.html", {
+        "adoptions": adoptions.order_by("-request_date"),
+        "staff_members": staff_members,
+        "statuses": AdoptionStatus.choices,
+        "selected_status": selected_status,
+        "selected_staff": selected_staff,
+        "selected_date": selected_date,
+    })
+
+def edit_adoption(request, pk):
+    adoption = Adoption.objects.select_related("pet").filter(pk=pk).first()
+
+    if not adoption:
+        return redirect("adoption_list")
+
+    if request.method == "POST":
+        status = request.POST.get("status")
+        adoption_date = request.POST.get("adoption_date") or None
+
+        if status not in dict(AdoptionStatus.choices):
+            return render(request, "edit_adoption.html", {
+                "adoption": adoption,
+                "statuses": AdoptionStatus.choices,
+                "error": "Invalid adoption status."
+            })
+
+        adoption.status = status
+        adoption.adoption_date = adoption_date
+        adoption.save()
+
+        if status == AdoptionStatus.COMPLETED:
+            adoption.pet.status = PetStatus.ADOPTED
+        else:
+            adoption.pet.status = PetStatus.IN_SHELTER
+
+        adoption.pet.save(update_fields=["status"])
+
+        return redirect("adoption_list")
+
+    return render(request, "edit_adoption.html", {
+        "adoption": adoption,
+        "statuses": AdoptionStatus.choices,
+    })
 
 # -------------------------------------------------------------------
 # Report 1: Adoptions vs Intake
