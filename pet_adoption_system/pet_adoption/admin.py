@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Shelter, Species, Breed, Pet, StaffRole, Staff, Adopter, Adoption
+from .models import Shelter, Species, Breed, Pet, StaffRole, Staff, Adopter, Adoption, AdoptionStatus, PetStatus
+
 
 @admin.register(Shelter)
 class ShelterAdmin(admin.ModelAdmin):
@@ -45,3 +46,25 @@ class AdoptionAdmin(admin.ModelAdmin):
     list_display = ("id", "pet", "adopter", "staff", "status", "request_date", "adoption_date")
     list_filter = ("status", "request_date")
     search_fields = ("pet__name", "adopter__first_name", "adopter__last_name")
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)  # saves the adoption
+
+        pet = obj.pet
+        # Mark as adopted if adoption is completed: 
+        if obj.status == AdoptionStatus.COMPLETED:
+            pet.status = PetStatus.ADOPTED
+        # Bring back to in shelter status if adoption was not marked as completed:
+        elif pet.status == PetStatus.ADOPTED:
+            pet.status = PetStatus.IN_SHELTER
+        pet.save(update_fields=["status"])
+
+    def delete_model(self, request, obj):
+        pet = obj.pet
+        was_completed = obj.status == AdoptionStatus.COMPLETED
+        super().delete_model(request, obj)
+        # Bring back to shelter if its completed adoption is deleted,
+        # == Adopted avoids deceased pets from being affected.
+        if was_completed and pet.status == PetStatus.ADOPTED:
+            pet.status = PetStatus.IN_SHELTER
+            pet.save(update_fields=["status"])
