@@ -36,7 +36,6 @@
 
 
 ## Features
-`TODO`
 
 ### Record Management
 
@@ -62,8 +61,8 @@ Managed records:
 
 | Layer                 | Technology                     | 
 |-----------------------|--------------------------------|
-| Language              | Python 3.10+                   |  
-| Web Framework         | Django 6.0                     |
+| Language              | Python 3.12+                   |  
+| Web Framework         | Django 6.1                     |
 | Database              | MySQL 8.4+                     |
 | Charts                | Chart.js                       |
 | Records Management UI | Django Admin                   |
@@ -72,16 +71,16 @@ Managed records:
 | Environment           | venv                           | 
 
 ## Database Design
-| Table      | Fields                                                                                                                                                                                      |
-|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Staff Role | id (PK), role name                                                                                                                                                                          |
-| Shelter    | id (PK), shelter name, address, capacity                                                                                                                                                    |
-| Staff      | id (PK), first name, last name, date of birth, sex (male, female), email, contact number, address, status (active, on-leave, terminated), hire date, shelter id (FK), role id (FK)          |
-| Adopter    | id (PK), first name, last name, date of birth, sex (male, female), email, contact number, address                                                                                           |
-| Adoption   | id (PK), request date, adoption date (nullable), status (pending, approved, rejected, completed), adopter id (FK), pet id (FK), staff id (FK)                                               |
-| Pet        | id (PK), name, status (in-shelter, adopted, deceased), sex (male, female), date of birth, kg weight, intake date, description (nullable), breed id (FK), shelter id (FK)                    |
-| Breed      | id (PK), name, species id (FK)                                                                                                                                                              |
-| Species    | id (PK), name                                                                                                                                                                               |
+| Table      | Fields                                                                                                                                                                             |
+|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Staff Role | id (PK), role name                                                                                                                                                                 |
+| Shelter    | id (PK), shelter name, address, capacity                                                                                                                                           |
+| Staff      | id (PK), first name, last name, date of birth, sex (male, female), email, contact number, address, status (active, on-leave, terminated), hire date, shelter id (FK), role id (FK) |
+| Adopter    | id (PK), first name, last name, date of birth, sex (male, female), email, contact number, address                                                                                  |
+| Adoption   | id (PK), request date, adoption date (nullable), status (pending, approved, rejected, completed), adopter id (FK), pet id (FK), staff id (FK)                                      |
+| Pet        | id (PK), name, status (in-shelter, adopted, deceased), sex (male, female), date of birth, kg weight, intake date, description (nullable), breed id (FK), shelter id (FK)           |
+| Breed      | id (PK), name, species id (FK)                                                                                                                                                     |
+| Species    | id (PK), name                                                                                                                                                                      |
 ### Entity Relationship Diagram of the DB:
 ![](docs/MWB_ERD.png)
 
@@ -90,8 +89,9 @@ Follow the guide step-by-step.
 
 ### Prerequisites
 
-- [`TODO`](link)
-- [`TODO`](link)
+- [Python 3.12 or newer](https://www.python.org/downloads/)
+- [MySQL 8.4 or newer](https://dev.mysql.com/downloads/mysql/)
+- [Git](https://git-scm.com/downloads)
 
 ### 1. Clone the repository
 Use this repository's URL.
@@ -208,7 +208,25 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser or whateve
 
 
 ## Project Structure
-`TODO`
+Key folders and files of the project:
+```
+CCINFOM-S40K-03-Pet_Adoption_Management_System/
+├── docs/                        # Proposal, ERD, and screenshots
+└── pet_adoption_system/
+    ├── manage.py
+    ├── requirements.txt
+    ├── .env.example             # Template for your own .env
+    ├── seed_data.sql            # Optional sample data
+    ├── pet_adoption_system/     # Django project (settings, root URLs)
+    └── pet_adoption/            # Main app
+        ├── models.py            # Database tables
+        ├── admin.py             # Django Admin (record management)
+        ├── views.py             # Dashboard, adoptions, and reports
+        ├── urls.py
+        ├── adoptions_intake_report.py  # Report 1 data builder
+        ├── templates/           # base.html and page templates
+        └── static/              # custom.css, JS (custom.js, charts.js), icons
+```
 
 
 ## Screenshots
