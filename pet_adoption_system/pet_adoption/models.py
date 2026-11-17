@@ -106,7 +106,7 @@ class Staff(models.Model):
     date_of_birth = models.DateField()
     sex = models.CharField(max_length=10, choices=Sex.choices)
     email = models.EmailField()
-    contact_number = models.CharField(max_length=20)
+    contact_number = models.CharField(max_length=16)
     address = models.CharField(max_length=255)
     role = models.ForeignKey(
         StaffRole, on_delete=models.PROTECT, related_name="staff_members"
