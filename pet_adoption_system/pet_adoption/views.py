@@ -1,4 +1,5 @@
 from datetime import date, datetime
+import calendar
 
 # Django libraries
 from django.db.models import Count, Q, Sum
@@ -308,39 +309,80 @@ def adoption_list(request):
         "selected_date": selected_date,
     })
 
+def _adoption_error(pet, status, request_date, adoption_date, exclude_pk=None):
+    TAKEN_STATUS = [AdoptionStatus.APPROVED, AdoptionStatus.COMPLETED]
+
+    # Return an error message, or "" if the adoption is valid.
+    if status not in dict(AdoptionStatus.choices):
+        return "Invalid adoption status."
+    
+    if request_date is None:
+        return "Request date is required."
+    
+    if status == AdoptionStatus.COMPLETED and adoption_date is None:
+        return "A completed adoption needs an adoption date."
+    
+    if status != AdoptionStatus.COMPLETED and adoption_date is not None:
+        return "Only completed adoptions can have an adoption date."
+    
+    if adoption_date and adoption_date < request_date:
+        return "Adoption date can't be before the request date."
+    
+    if status in TAKEN_STATUS and Adoption.objects.filter(
+        pet=pet, status__in=TAKEN_STATUS
+    ).exclude(pk=exclude_pk).exists():
+        return "This pet already has an active adoption."
+    return ""
+
 def adoption_edit(request, pk):
     adoption = Adoption.objects.select_related("pet").filter(pk=pk).first()
 
+    # If no adoptions retrieved.
     if not adoption:
         return redirect("adoption_list")
 
+    error = ""
+
     if request.method == "POST":
         status = request.POST.get("status")
-        adoption_date = request.POST.get("adoption_date") or None
+        raw_date = request.POST.get("adoption_date")  # "" if left blank
 
-        if status not in dict(AdoptionStatus.choices):
-            return render(request, "adoptions_edit.html", {
-                "adoption": adoption,
-                "statuses": AdoptionStatus.choices,
-                "error": "Invalid adoption status."
-            })
+        # Basic date validation:
+        try:
+            # Blank -> None, otherwise convert the string to a Python date
+            adoption_date = date.fromisoformat(raw_date) if raw_date else None
+        except ValueError:
+            adoption_date, error = None, "Please enter a valid adoption date."
 
-        adoption.status = status
-        adoption.adoption_date = adoption_date
-        adoption.save()
+        # Run it down an in-depth validation.
+        if not error:
+            error = _adoption_error(adoption.pet, status, adoption.request_date,
+                adoption_date, exclude_pk=adoption.pk)
 
-        if status == AdoptionStatus.COMPLETED:
-            adoption.pet.status = PetStatus.ADOPTED
-        else:
-            adoption.pet.status = PetStatus.IN_SHELTER
+        # If valid:
+        if not error:
+            adoption.status = status
+            adoption.adoption_date = adoption_date
+            adoption.save()
 
-        adoption.pet.save(update_fields=["status"])
+            pet = adoption.pet
+            # Never touch a deceased pet: skip the pet update.
+            if pet.status == PetStatus.DECEASED:
+                return redirect("adoption_list")
 
-        return redirect("adoption_list")
+            if status == AdoptionStatus.COMPLETED:
+                pet.status = PetStatus.ADOPTED
+            # Adoption was rejected, so update pet:
+            elif pet.status == PetStatus.ADOPTED:
+                pet.status = PetStatus.IN_SHELTER
 
+            pet.save(update_fields=["status"])
+            return redirect("adoption_list")
+        
     return render(request, "adoptions_edit.html", {
         "adoption": adoption,
         "statuses": AdoptionStatus.choices,
+        "error": error
     })
 
 # -------------------------------------------------------------------
