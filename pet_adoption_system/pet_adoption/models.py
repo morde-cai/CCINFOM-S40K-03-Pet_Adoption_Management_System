@@ -165,8 +165,9 @@ class Adoption(models.Model):
 
     # Validation: 
     def clean(self):
-        if self.pet_id and self.pet.status == PetStatus.DECEASED:
-            raise ValidationError("This pet is deceased, so its adoption can't be changed.")
+        if (self.pet_id and self.pet.status == PetStatus.DECEASED
+                and self.status != AdoptionStatus.REJECTED):
+            raise ValidationError("This pet is deceased, so its request can only be rejected.")
         
         if self.status != AdoptionStatus.COMPLETED and self.adoption_date:
             raise ValidationError("Only completed adoptions can have an adoption date.")
