@@ -2,6 +2,7 @@ from datetime import date, datetime
 import calendar
 
 # Django libraries
+from django.core.exceptions import ValidationError
 from django.db.models import Count, Q, Sum
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -198,7 +199,7 @@ def new_adoption_make(request, pk):
 
     if not pet:
         # Not available anymore (adopted, deceased, or doesn't exist)
-        return redirect("new_adoption")
+        return redirect("new_adoption_list")
 
     error = ""
     # Adoption form
@@ -207,35 +208,44 @@ def new_adoption_make(request, pk):
     # Get form data once submitted by user.
     if request.method == "POST":
         form = request.POST
-
-        adopter_id = form.get("adopter")
-        staff_id = form.get("staff")
-        request_date = form.get("request_date")
-        adoption_date = form.get("adoption_date") or None
+        adopter_id = form.get("adopter", "")
+        staff_id = form.get("staff", "")
         status = form.get("status")
+        raw_request = form.get("request_date")
+        raw_adoption = form.get("adoption_date")
 
-        # Validate adopter, staff, and status
-        if not Adopter.objects.filter(id=adopter_id).exists():
-            error = "Please select a valid adopter."
-        elif not Staff.objects.filter(
-            id=staff_id,
-            status=StaffStatus.ACTIVE
-        ).exists():
-            error = "Please select an active staff member."
-        elif status not in dict(AdoptionStatus.choices):
-            error = "Invalid adoption status."
-        # Valid:
-        else:
-            adoption = Adoption.objects.create(
-                pet=pet,
-                adopter_id=adopter_id,
-                staff_id=staff_id,
-                request_date=request_date,
-                adoption_date=adoption_date,
-                status=status,
+        # Basic date validation:
+        try:
+            request_date = date.fromisoformat(raw_request) if raw_request else None
+            adoption_date = date.fromisoformat(raw_adoption) if raw_adoption else None
+        except ValueError:
+            request_date = adoption_date = None
+            error = "Please enter valid dates."
+
+        # Adopter and staff must be real IDs. isdigit() stops 'abc' from crashing the query.
+        if not error:
+            if not (adopter_id.isdigit() and Adopter.objects.filter(id=adopter_id).exists()):
+                error = "Please select a valid adopter."
+            elif not (staff_id.isdigit() and Staff.objects.filter(
+                    id=staff_id, status=StaffStatus.ACTIVE).exists()):
+                error = "Please select an active staff member."
+
+        # In depth validation:
+        if not error:
+            adoption = Adoption(
+                pet=pet, adopter_id=adopter_id, staff_id=staff_id,
+                request_date=request_date, adoption_date=adoption_date, status=status,
             )
+            try:
+                adoption.full_clean()
+            except ValidationError as e:
+                error = " ".join(e.messages)
 
-            if adoption.status == AdoptionStatus.COMPLETED:
+        # If valid:
+        if not error:
+            adoption.save()
+
+            if status == AdoptionStatus.COMPLETED:
                 pet.status = PetStatus.ADOPTED
                 pet.save(update_fields=["status"])
 
@@ -246,7 +256,7 @@ def new_adoption_make(request, pk):
     staff_members = Staff.objects.filter(
         status=StaffStatus.ACTIVE
     ).order_by("first_name", "last_name")
-    
+
     return render(request, "new_adoption_make.html", {
         "pet": pet,
         "adopters": adopters,
@@ -309,31 +319,6 @@ def adoption_list(request):
         "selected_date": selected_date,
     })
 
-def _adoption_error(pet, status, request_date, adoption_date, exclude_pk=None):
-    TAKEN_STATUS = [AdoptionStatus.APPROVED, AdoptionStatus.COMPLETED]
-
-    # Return an error message, or "" if the adoption is valid.
-    if status not in dict(AdoptionStatus.choices):
-        return "Invalid adoption status."
-    
-    if request_date is None:
-        return "Request date is required."
-    
-    if status == AdoptionStatus.COMPLETED and adoption_date is None:
-        return "A completed adoption needs an adoption date."
-    
-    if status != AdoptionStatus.COMPLETED and adoption_date is not None:
-        return "Only completed adoptions can have an adoption date."
-    
-    if adoption_date and adoption_date < request_date:
-        return "Adoption date can't be before the request date."
-    
-    if status in TAKEN_STATUS and Adoption.objects.filter(
-        pet=pet, status__in=TAKEN_STATUS
-    ).exclude(pk=exclude_pk).exists():
-        return "This pet already has an active adoption."
-    return ""
-
 def adoption_edit(request, pk):
     adoption = Adoption.objects.select_related("pet").filter(pk=pk).first()
 
@@ -354,22 +339,20 @@ def adoption_edit(request, pk):
         except ValueError:
             adoption_date, error = None, "Please enter a valid adoption date."
 
-        # Run it down an in-depth validation.
-        if not error:
-            error = _adoption_error(adoption.pet, status, adoption.request_date,
-                adoption_date, exclude_pk=adoption.pk)
-
-        # If valid:
+        # Run it down an in-depth validation (the model's clean() has the rules).
         if not error:
             adoption.status = status
             adoption.adoption_date = adoption_date
+            try:
+                adoption.full_clean()
+            except ValidationError as e:
+                error = " ".join(e.messages)
+
+        # If valid:
+        if not error:
             adoption.save()
 
             pet = adoption.pet
-            # Never touch a deceased pet: skip the pet update.
-            if pet.status == PetStatus.DECEASED:
-                return redirect("adoption_list")
-
             if status == AdoptionStatus.COMPLETED:
                 pet.status = PetStatus.ADOPTED
             # Adoption was rejected, so update pet:

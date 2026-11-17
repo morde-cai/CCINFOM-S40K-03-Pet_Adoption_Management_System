@@ -159,6 +159,28 @@ class Adoption(models.Model):
     status = models.CharField(
         max_length=15, choices=AdoptionStatus.choices, default=AdoptionStatus.PENDING
     )
- 
+
     def __str__(self):
         return f"Adoption #{self.id}: {self.pet} -> {self.adopter}"
+
+    # Validation: 
+    def clean(self):
+        if self.pet_id and self.pet.status == PetStatus.DECEASED:
+            raise ValidationError("This pet is deceased, so its adoption can't be changed.")
+        
+        if self.status != AdoptionStatus.COMPLETED and self.adoption_date:
+            raise ValidationError("Only completed adoptions can have an adoption date.")
+            
+        if self.status == AdoptionStatus.COMPLETED and not self.adoption_date:
+            raise ValidationError("A completed adoption needs an adoption date.")
+        
+        if self.adoption_date and self.request_date and self.adoption_date < self.request_date:
+            raise ValidationError("Adoption date can't be before the request date.")
+        
+        if self.status in (AdoptionStatus.APPROVED, AdoptionStatus.COMPLETED):
+            clash = Adoption.objects.filter(
+                pet=self.pet,
+                status__in=(AdoptionStatus.APPROVED, AdoptionStatus.COMPLETED),
+            ).exclude(pk=self.pk)
+            if clash.exists():
+                raise ValidationError("This pet already has an active adoption.")
