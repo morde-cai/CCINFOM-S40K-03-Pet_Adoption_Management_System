@@ -304,3 +304,29 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+/* ---------- Tom Select (searchable Adopter dropdown) ---------- */
+/* Tom Select's Bootstrap theme hard-codes light colors, so point it at the theme variables.
+   The .page-card prefix makes these win over its stylesheet, which loads after this one. */
+.page-card .ts-wrapper .ts-control,
+.page-card .ts-wrapper.single.input-active .ts-control,
+.page-card .ts-dropdown {
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
+}
+.page-card .ts-control input,
+.page-card .ts-wrapper.single .ts-control .item,
+.page-card .ts-dropdown .option,
+.page-card .ts-dropdown .no-results {
+  color: var(--bs-body-color);
+}
+.page-card .ts-dropdown .active {
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+}
+.page-card .ts-dropdown .highlight {
+  background: transparent;
+  color: inherit;
+  font-weight: 700;
+}
