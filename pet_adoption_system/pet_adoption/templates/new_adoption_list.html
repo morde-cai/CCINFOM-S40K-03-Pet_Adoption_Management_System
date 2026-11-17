@@ -22,7 +22,7 @@
                 <option value="">All Shelters</option>
                 {% for s in shelters %}
                 <option value="{{ s.pk }}"
-                    {% if selected_shelter == s.pk|stringformat:"s" %}selected{% endif %}>
+                    {% if filter_shelter == s.pk|stringformat:"s" %}selected{% endif %}>
                     {{ s.shelter_name }}
                 </option>
                 {% endfor %}
