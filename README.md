@@ -266,7 +266,8 @@ CCINFOM-S40K-03-Pet_Adoption_Management_System/
 
 ## References
 - *AmaneKai (n.d.). CCINFOM-DBAPP-SAMPLE. https://github.com/AmaneKai/CCINFOM-DBAPP-SAMPLE*
-- *Django (n.d.). Django documentation. Django Project. https://docs.djangoproject.com/en/6.1/*
 - *Bootstrap (n.d.). Bootstrap 5 Documentation. https://getbootstrap.com/docs/5.3/getting-started/introduction/*
-- *Lucide (n.d.). Lucide. https://lucide.dev/*
 - *Chart.js (n.d.). Chart.js Docs. https://www.chartjs.org/docs/latest/*
+- *Django (n.d.). Django documentation. Django Project. https://docs.djangoproject.com/en/6.1/*
+- *Lucide (n.d.). Lucide. https://lucide.dev/*
+- *Tom Select (n.d.). Basic Examples. https://tom-select.js.org/examples/*
