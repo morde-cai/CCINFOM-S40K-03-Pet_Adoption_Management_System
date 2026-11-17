@@ -71,9 +71,19 @@ Managed records:
 | Config                | python-dotenv                  |
 | Environment           | venv                           | 
 
-## Database Design (ERD)
-`TODO`
-
+## Database Design
+| Table      | Fields                                                                                                                                                                                      |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Staff Role | id (PK), role name                                                                                                                                                                          |
+| Shelter    | id (PK), shelter name, address, capacity                                                                                                                                                    |
+| Staff      | id (PK), first name, last name, date of birth, sex (male, female), email, contact number, address, status (active, on-leave, terminated), hire date, shelter id (FK), role id (FK)          |
+| Adopter    | id (PK), first name, last name, date of birth, sex (male, female), email, contact number, address                                                                                           |
+| Adoption   | id (PK), request date, adoption date (nullable), status (pending, approved, rejected, completed), adopter id (FK), pet id (FK), staff id (FK)                                               |
+| Pet        | id (PK), name, status (in-shelter, adopted, deceased), sex (male, female), date of birth, kg weight, intake date, description (nullable), breed id (FK), shelter id (FK)                    |
+| Breed      | id (PK), name, species id (FK)                                                                                                                                                              |
+| Species    | id (PK), name                                                                                                                                                                               |
+### Entity Relationship Diagram of the DB:
+![](docs/MWB_ERD.png)
 
 ## Getting Started
 Follow the guide step-by-step.
