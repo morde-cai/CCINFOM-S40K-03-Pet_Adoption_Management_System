@@ -58,8 +58,10 @@ Each of the main records supports the standard record management functions:
 - A Chart.js bar chart of pets taken in versus adopted over the last 6 months.
 
 ### New Adoption
-- Form to register an adoption by choosing a pet, adopter, staff member, request date, adoption date (optional), and status.
-- Only pets currently in a shelter can be selected, and a pet with an active (pending or approved) request is rejected.
+- Paginated list of all available pets, filterable by shelter.
+- Adopt a pet from the list, leading to an adoption form page.
+- Form to register an adoption by adopter (search-filtered drop-down list), staff member, request date, adoption date (optional), and status.
+- Only pets currently in a shelter can be selected, and a pet with an active (approved) request is rejected. 
 - Only active staff can be assigned.
 - Completing an adoption automatically marks the pet as adopted.
 
@@ -252,8 +254,8 @@ CCINFOM-S40K-03-Pet_Adoption_Management_System/
 |-----------------------------|-----------------------------------------------------------------------------|
 | Django Admin Panel          | ![Django Admin Home](docs/screenshots/django_admin_home.png) ![Django Admin Home](docs/screenshots/django_admin_list.png) |  
 | Dashboard                   | ![Dashboard](docs/screenshots/dashboard.png)                                |
-| New Adoption                | ![New Adoption](docs/screenshots/new_adoption.png)                          |
-| Adoptions                   | ![Adoptions](docs/screenshots/adoption_records.png)                         |
+| New Adoption                | ![New Adoption](docs/screenshots/new_adoption_list.png) ![New Adoption](docs/screenshots/new_adoption_make.png)                         |
+| Adoptions                   | ![Adoptions](docs/screenshots/adoption_records_list.png)                         |
 | Adoptions and Intake Report | ![Adoptions and Intake Report](docs/screenshots/adoption_intake_report.png) |
 | Staff Adoptions Report      | ![Staff Adoptions Report](docs/screenshots/staff_adoptions_report.png)      |
 | Light                       | ![Light](docs/screenshots/light.png)                                        |
