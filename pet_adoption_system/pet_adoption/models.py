@@ -82,7 +82,11 @@ class Pet(models.Model):
     )
 
     def clean(self):
-        count = Pet.objects.filter(shelter=self.shelter).count()
+        count = Pet.objects.filter(
+            shelter=self.shelter,
+            status=PetStatus.IN_SHELTER
+        ).exclude(pk=self.pk).count()
+
         if count >= self.shelter.capacity:
             raise ValidationError("This shelter is already full.")
             
