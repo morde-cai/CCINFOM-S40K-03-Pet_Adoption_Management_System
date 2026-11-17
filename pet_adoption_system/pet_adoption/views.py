@@ -373,7 +373,7 @@ def adoption_intake_report(request):
 def _requested_year(request):
     year_param = request.GET.get('year')
     if not year_param or not year_param.isdigit():
-        return date.today().year
+        return timezone.localdate().year
     return int(year_param)
 
 STAFF_CHART_SIZE = 10 # max number of staff for the chart
