@@ -421,7 +421,6 @@ def staff_report(request):
     # Table
     paginator = Paginator(ranks, PAGE_SIZE)
     page_obj = paginator.get_page(request.GET.get("page"))
-    page_range = list(paginator.get_elided_page_range(page_obj.number, on_each_side=1, on_ends=1))
 
     previous_pets_handled = None
     previous_rank = None
@@ -458,11 +457,14 @@ def staff_report(request):
          "sub": "across all shelters"},
     ]
 
+    params = request.GET.copy()
+    params.pop("page", None)
+
     return render(request, "staff_report.html", {
         "selected_year": year,
         "available_years": available_years,
         "page_obj": page_obj,
         "kpis": kpis,
         "chart_data": chart_data,
-        "page_range": page_range,
+        "querystring": params.urlencode(), # Encode params->URL. Ex: "year=2026"
     })

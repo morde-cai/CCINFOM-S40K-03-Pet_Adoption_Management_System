@@ -81,78 +81,49 @@
                 </tbody>
             </table>
         </div>
-        {% if page_obj.has_other_pages %}
-            <nav class="d-flex justify-content-center mt-4" aria-label="Staff leaderboard pages">
-                <ul class="pagination mb-0">
-                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
-                        {% if page_obj.has_previous %}
-                            <a class="page-link" href="?year={{ selected_year }}&amp;page={{ page_obj.previous_page_number }}" aria-label="Previous page">&lsaquo;</a>
-                        {% else %}
-                            <span class="page-link" aria-label="Previous page">&lsaquo;</span>
-                        {% endif %}
-                    </li>
-
-                    {% for p in page_range %}
-                        {% if p == page_obj.paginator.ELLIPSIS %}
-                            <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
-                        {% elif p == page_obj.number %}
-                            <li class="page-item active" aria-current="page"><span class="page-link">{{ p }}</span></li>
-                        {% else %}
-                            <li class="page-item"><a class="page-link" href="?year={{ selected_year }}&amp;page={{ p }}">{{ p }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-
-                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
-                        {% if page_obj.has_next %}
-                            <a class="page-link" href="?year={{ selected_year }}&amp;page={{ page_obj.next_page_number }}" aria-label="Next page">&rsaquo;</a>
-                        {% else %}
-                            <span class="page-link" aria-label="Next page">&rsaquo;</span>
-                        {% endif %}
-                    </li>
-                </ul>
-            </nav>
-        {% endif %}
+        
+        {% include "_pagination.html" %}
     </div>
 {% endblock %}
 
 <!-- Chart Script-->
 {% block extra_js %}
 {% if chart_data.labels %}
-{{ chart_data|json_script:"chartData" }}
-<script>
-    const chartData = JSON.parse(document.getElementById('chartData').textContent);
-    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+    {{ chart_data|json_script:"chartData" }}
+    <script>
+        const chartData = JSON.parse(document.getElementById('chartData').textContent);
+        Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
 
-    const chart = new Chart(document.getElementById('staffChart'), {
-        type: 'bar',
-        data: {
-            labels: chartData.labels,
-            datasets: [
-                { label: 'Completed adoptions', data: chartData.values, borderRadius: 6 },
-            ],
-        },
-        options: {
-            indexAxis: 'y',  // turns the bar chart sideways
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: { ticks: { precision: 0 }, grid: {}, beginAtZero: true, suggestedMax: 5 },
-                y: { ticks: {}, grid: { display: false } },
+        const chart = new Chart(document.getElementById('staffChart'), {
+            type: 'bar',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    { label: 'Completed adoptions', data: chartData.values, borderRadius: 6 },
+                ],
             },
-            plugins: { legend: { display: false } },
-        },
-    });
+            options: {
+                indexAxis: 'y',  // turns the bar chart sideways
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { precision: 0 }, grid: {}, beginAtZero: true, suggestedMax: 5 },
+                    y: { ticks: {}, grid: { display: false } },
+                },
+                plugins: { legend: { display: false } },
+            },
+        });
 
-    function applyChartTheme() {
-        const c = themeColors();
-        chart.data.datasets[0].backgroundColor = c.primary;
-        chart.options.scales.x.ticks.color = c.text;
-        chart.options.scales.y.ticks.color = c.text;
-        chart.options.scales.x.grid.color = c.grid;
-        chart.update('none');
-    }
-    applyChartTheme();
-    document.addEventListener('themechange', applyChartTheme);
-</script>
+        function applyChartTheme() {
+            const c = themeColors();
+            chart.data.datasets[0].backgroundColor = c.primary;
+            chart.options.scales.x.ticks.color = c.text;
+            chart.options.scales.y.ticks.color = c.text;
+            chart.options.scales.x.grid.color = c.grid;
+            chart.update('none');
+        }
+        applyChartTheme();
+        document.addEventListener('themechange', applyChartTheme);
+    </script>
 {% endif %}
 {% endblock %}
