@@ -26,18 +26,23 @@
 **Course:** CCINFOM | A.Y. 2026 - 2027 Term 1  
 **Instructor:** Dr. Payawal, Bryan O’Nomerp  
 
-| Name |
-|------|
-| Aceveda, Jiahe    | 
-| Dy, Jasmine       | 
-| Nucum, Mark       | 
-| Pielago, James C. | 
-
-
+- Aceveda, Jiahe     
+- Dy, Jasmine        
+- Nucum, Mark        
+- Pielago, James C. 
 
 ## Features
 
-### Record Management
+### Django Admin Panel
+
+Managed records:
+- Pets
+- Breeds and Species
+- Adopters
+- Staff
+- Staff Roles
+- Adoptions
+- Shelters
 
 Each of the main records supports the standard record management functions:
 
@@ -45,16 +50,36 @@ Each of the main records supports the standard record management functions:
 - Read/View an existing record.
 - Update an existing record.
 - Delete an existing record.
-- List records, filterable by a set of fields.
+- List records, searchable and filterable by a set of fields.
 
-Managed records:
+### Dashboard
+- KPI cards: pets available for adoption, pets taken in this month, pets adopted this month, pending requests, shelter occupancy, and active staff.
+- Per-shelter progress bars showing pets in the shelter versus capacity.
+- A Chart.js bar chart of pets taken in versus adopted over the last 6 months.
+![Dashboard](docs/screenshots/dashboard.png)
 
-- **Pets** (with photos)
-- **Breeds** and **Species**
-- **Adopters** (stored as records, entered and maintained by staff)
-- **Staff** and **Staff Roles**
-- **Adoptions**
-- **Shelters**
+### New Adoption
+- Form to register an adoption by choosing a pet, adopter, staff member, request date, adoption date (optional), and status.
+- Only pets currently in a shelter can be selected, and a pet with an active (pending or approved) request is rejected.
+- Only active staff can be assigned.
+- Completing an adoption automatically marks the pet as adopted.
+![New Adoption](docs/screenshots/new_adoption.png)
+
+### Adoptions
+- Paginated list of all adoption records, filterable by status, staff, and adoption date.
+- Edit an adoption's status and adoption date. The pet's status updates with it: completed means adopted, anything else returns the pet to in-shelter.
+![Adoption Records](docs/screenshots/adoption_records.png)
+
+### Reports
+1. **Adoptions and Intake Report:** pets adopted versus taken in, grouped by species, for a chosen year and month (or all months).
+![Report 1](docs/screenshots/adoption_intake_report.png)
+2.  **Staff Adoptions Report:** staff ranked by the number of adoptions they successfully handled in a chosen year, with a top-10 chart.
+![Report 2](docs/screenshots/staff_adoptions_report.png)
+
+### Other
+- Light and dark theme toggle.
+![Light](docs/screenshots/light.png)
+![Dark](docs/screenshots/dark.png)
 
 
 ## Tech Stack
