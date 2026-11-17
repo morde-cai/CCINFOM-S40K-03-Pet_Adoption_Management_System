@@ -271,9 +271,9 @@ def new_adoption_make(request, pk):
 # -------------------------------------------------------------------
 def adoption_list(request):
     adoptions = Adoption.objects.select_related(
-        "pet", "adopter", "staff"
+        "pet", "pet__shelter", "adopter", "staff"
     ).all()
-
+    
     selected_status = request.GET.get("status", "")
     selected_staff = request.GET.get("staff", "")
     selected_date = request.GET.get("adoption_date", "")

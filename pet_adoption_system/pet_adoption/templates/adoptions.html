@@ -65,6 +65,7 @@
                 <tr>
                     <th>Adoption ID</th>
                     <th>Pet</th>
+                    <th>Shelter</th>
                     <th>Adopter</th>
                     <th>Staff</th>
                     <th>Request Date</th>
@@ -79,6 +80,7 @@
                 <tr>
                     <td>{{ adoption.pk }}</td>
                     <td>{{ adoption.pet.name }}</td>
+                    <td>{{ adoption.pet.shelter.shelter_name }}</td>
                     <td>{{ adoption.adopter }}</td>
                     <td>{{ adoption.staff }}</td>
                     <td>{{ adoption.request_date|date:"M d, Y" }}</td>
@@ -99,7 +101,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="text-center text-body-secondary">
+                    <td colspan="9" class="text-center text-body-secondary">
                         No adoption records found.
                     </td>
                 </tr>
