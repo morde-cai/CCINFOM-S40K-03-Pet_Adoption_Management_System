@@ -84,9 +84,10 @@ Each of the main records supports the standard record management functions:
 | Language              | Python 3.12+                   |  
 | Web Framework         | Django 6.1                     |
 | Database              | MySQL 8.4+                     |
-| Charts                | Chart.js                       |
+| Charts                | Chart.js (via CDN)             |
 | Records Management UI | Django Admin                   |
-| Custom UI             | Bootstrap 5 + Custom CSS / JS  |
+| Custom UI             | Bootstrap 5 (via CDN) + Custom CSS / JS  |
+| Searchable Drop Downs | Tom Select 2.3.1 (via CDN)     |
 | Config                | python-dotenv                  |
 | Environment           | venv                           | 
 
