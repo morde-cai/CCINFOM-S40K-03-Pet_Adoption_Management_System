@@ -1,16 +1,21 @@
 from datetime import date, datetime
 
+# Django libraries
 from django.db.models import Count, Q, Sum
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.core.paginator import Paginator
 
+# Local files
 from .models import *
 from .adoptions_intake_report import *
 
 # Use for multiple top performers
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
+
+# Max number of records per page.
+PAGE_SIZE = 10
 
 # -------------------------------------------------------------------
 # DASHBOARD
@@ -39,8 +44,10 @@ def _dashboard_kpis():
     # Shelter KPI
     in_shelter = available_adoptions
     capacity = Shelter.objects.aggregate(total=Sum("capacity"))["total"]
+    
     if capacity is None:
         capacity = 0
+
     if capacity == 0:
         shelter_percent = "0 Capacity"
     else:
@@ -140,43 +147,83 @@ def dashboard(request):
 # -------------------------------------------------------------------
 # New Adoptions
 # -------------------------------------------------------------------
-def new_adoption(request):
+def new_adoption_list(request):
+    # Get list of pets, use Django's selected_related for efficient
+    # JOIN queries instead of indiv. accesses:
+    pets = Pet.objects.filter(
+        status=PetStatus.IN_SHELTER
+    ).select_related("breed__species", "shelter")
+
+    # Get filters from URL request.
+    filter_search = request.GET.get("q", "").strip()
+    filter_shelter = request.GET.get("shelter", "")
+
+    if filter_shelter.isdigit():
+        pets = pets.filter(shelter_id=filter_shelter)
+    else:
+        filter_shelter = ""
+
+    if filter_search:
+        pets = pets.filter(name__icontains=filter_search)
+
+    # Use PK to break ties 
+    pets = pets.order_by("name", "pk")
+
+    paginator = Paginator(pets, PAGE_SIZE)
+    # Get page number, then page object data from object paginator.
+    # Django get_page handles invalid page numbers.
+    page_obj = paginator.get_page(request.GET.get("page"))
+
+    # Keep the active filters in the page links
+    params = request.GET.copy()
+    params.pop("page", None)
+
+    return render(request, "new_adoption_list.html", {
+        "pets": page_obj,
+        "querystring": params.urlencode(), # Convert params to URL format
+        "shelters": Shelter.objects.order_by("shelter_name"),
+        "q": filter_search,
+        "filter_shelter": filter_shelter,
+    })
+
+def new_adoption_make(request, pk):
+    # Extra precaution in case user is able to adopt an invalid pet.
+    pets = Pet.objects.filter(
+        status=PetStatus.IN_SHELTER
+    ).select_related("breed__species", "shelter")
+
+    # Adoption form for one chosen pet.
+    pet = pets.filter(pk=pk).first() # first() to get record from query set
+
+    if not pet:
+        # Not available anymore (adopted, deceased, or doesn't exist)
+        return redirect("new_adoption")
+
     error = ""
+    # Adoption form
+    form = {}
 
+    # Get form data once submitted by user.
     if request.method == "POST":
-        pet_id = request.POST.get("pet")
-        adopter_id = request.POST.get("adopter")
-        staff_id = request.POST.get("staff")
-        request_date = request.POST.get("request_date")
-        adoption_date = request.POST.get("adoption_date") or None
-        status = request.POST.get("status")
+        form = request.POST
 
-        pet = Pet.objects.filter(
-            id=pet_id,
-            status=PetStatus.IN_SHELTER
-        ).first()
+        adopter_id = form.get("adopter")
+        staff_id = form.get("staff")
+        request_date = form.get("request_date")
+        adoption_date = form.get("adoption_date") or None
+        status = form.get("status")
 
-        if not pet:
-            error = "This pet is not available for adoption."
-
-        elif Adoption.objects.filter(
-            pet_id=pet_id,
-            status__in=[
-                AdoptionStatus.PENDING,
-                AdoptionStatus.APPROVED,
-            ]
-        ).exists():
-            error = "This pet already has an active adoption request."
-
-        elif not Adopter.objects.filter(id=adopter_id).exists():
+        # Validate adopter, staff, and status
+        if not Adopter.objects.filter(id=adopter_id).exists():
             error = "Please select a valid adopter."
-
         elif not Staff.objects.filter(
             id=staff_id,
             status=StaffStatus.ACTIVE
         ).exists():
             error = "Please select an active staff member."
-
+        elif status not in dict(AdoptionStatus.choices):
+            error = "Invalid adoption status."
+        # Valid:
         else:
             adoption = Adoption.objects.create(
                 pet=pet,
@@ -193,13 +240,18 @@ def new_adoption(request):
 
             return redirect("adoption_list")
 
-    return render(request, "new_adoption.html", {
-        "pets": Pet.objects.filter(status=PetStatus.IN_SHELTER),
-        "adopters": Adopter.objects.order_by("first_name", "last_name"),
-        "staff_members": Staff.objects.filter(
-            status=StaffStatus.ACTIVE
-        ).order_by("first_name", "last_name"),
+    # Adopters and staff list
+    adopters = Adopter.objects.order_by("first_name", "last_name")
+    staff_members = Staff.objects.filter(
+        status=StaffStatus.ACTIVE
+    ).order_by("first_name", "last_name")
+    
+    return render(request, "new_adoption_make.html", {
+        "pet": pet,
+        "adopters": adopters,
+        "staff_members": staff_members,
         "statuses": AdoptionStatus.choices,
+        "form": form,
         "error": error,
     })
 
@@ -239,7 +291,7 @@ def adoption_list(request):
 
     adoptions = adoptions.order_by("-request_date", "-pk")  # add -pk so the order is stable
 
-    paginator = Paginator(adoptions, 15)
+    paginator = Paginator(adoptions, PAGE_SIZE)
     page_obj = paginator.get_page(request.GET.get("page"))
 
     # keep the active filters in the page links
@@ -256,7 +308,7 @@ def adoption_list(request):
         "selected_date": selected_date,
     })
 
-def edit_adoption(request, pk):
+def adoption_edit(request, pk):
     adoption = Adoption.objects.select_related("pet").filter(pk=pk).first()
 
     if not adoption:
@@ -267,7 +319,7 @@ def edit_adoption(request, pk):
         adoption_date = request.POST.get("adoption_date") or None
 
         if status not in dict(AdoptionStatus.choices):
-            return render(request, "edit_adoption.html", {
+            return render(request, "adoptions_edit.html", {
                 "adoption": adoption,
                 "statuses": AdoptionStatus.choices,
                 "error": "Invalid adoption status."
@@ -286,7 +338,7 @@ def edit_adoption(request, pk):
 
         return redirect("adoption_list")
 
-    return render(request, "edit_adoption.html", {
+    return render(request, "adoptions_edit.html", {
         "adoption": adoption,
         "statuses": AdoptionStatus.choices,
     })
@@ -324,7 +376,6 @@ def _requested_year(request):
         return date.today().year
     return int(year_param)
 
-STAFF_PAGE_SIZE = 100 # limit to 100 at a time so it doesnt load all of the DB's records
 STAFF_CHART_SIZE = 10 # max number of staff for the chart
 
 def staff_report(request):
@@ -338,7 +389,7 @@ def staff_report(request):
     # Filter adoptions by status and year
     # MYSQL: WHERE status = 'Completed' AND YEAR(adoption_date) = <year>
     handled_in_year = Q(
-                        adoptions__status = AdoptionStatus.COMPLETED, adoptions__adoption_date__year = year
+        adoptions__status = AdoptionStatus.COMPLETED, adoptions__adoption_date__year = year
     )
 
     """
@@ -368,7 +419,7 @@ def staff_report(request):
     }
 
     # Table
-    paginator = Paginator(ranks, STAFF_PAGE_SIZE)
+    paginator = Paginator(ranks, PAGE_SIZE)
     page_obj = paginator.get_page(request.GET.get("page"))
     page_range = list(paginator.get_elided_page_range(page_obj.number, on_each_side=1, on_ends=1))
 

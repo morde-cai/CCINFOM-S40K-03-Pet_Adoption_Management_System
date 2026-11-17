@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}New Adoption | Paws{% endblock %}
+{% block topnav_breadcrumb %}Paws Adoption / New Adoption{% endblock %}
+{% block topnav_head %}Find a Pet to Adopt{% endblock %}
+
+{% block content %}
+<!-- Filter Card: Search and Shelter -->
+<div class="page-card p-4 mb-4">
+    <h2 class="h6 fw-bold mb-3">Search Available Pets</h2>
+
+    <form method="GET" class="d-flex flex-wrap gap-3 align-items-end">
+        <div>
+            <label for="q" class="form-label">Search</label>
+            <input type="search" name="q" id="q" class="form-control"
+                   placeholder="Pet name" value="{{ q }}">
+        </div>
+
+        <div>
+            <label for="shelter" class="form-label">Shelter</label>
+            <select name="shelter" id="shelter" class="form-select">
+                <option value="">All Shelters</option>
+                {% for s in shelters %}
+                <option value="{{ s.pk }}"
+                    {% if selected_shelter == s.pk|stringformat:"s" %}selected{% endif %}>
+                    {{ s.shelter_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a href="{% url 'new_adoption_list' %}" class="btn btn-outline-secondary">Reset</a>
+    </form>
+</div>
+
+<!-- List of Pets Card (w/ Pagination) -->
+<div class="page-card p-4">
+    <h2 class="h6 fw-bold mb-3">Available Pets</h2>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Pet ID</th>
+                    <th>Name</th>
+                    <th>Species</th>
+                    <th>Breed</th>
+                    <th>Sex</th>
+                    <th>Age</th>
+                    <th>Shelter</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for pet in pets %}
+                <tr>
+                    <td>{{ pet.pk }}</td>
+                    <td>{{ pet.name }}</td>
+                    <td>{{ pet.breed.species.name }}</td>
+                    <td>{{ pet.breed.name }}</td>
+                    <td>{{ pet.get_sex_display }}</td>
+                    <td>
+                        {% if pet.date_of_birth %}
+                            {{ pet.date_of_birth|timesince }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>{{ pet.shelter.shelter_name }}</td>
+                    <td>
+                        <a href="{% url 'new_adoption_make' pet.pk %}"
+                           class="btn btn-sm btn-primary">
+                            Adopt
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center text-body-secondary">
+                        No available pets found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>  {# end table-responsive #}
+
+    {% include "_pagination.html" with page_obj=pets %}
+</div>
+{% endblock %}
