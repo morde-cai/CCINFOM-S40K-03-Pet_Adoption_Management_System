@@ -102,7 +102,7 @@ Each of the main records supports the standard record management functions:
 | Pet        | id (PK), name, status (in-shelter, adopted, deceased), sex (male, female), date of birth, kg weight, intake date, description (nullable), breed id (FK), shelter id (FK)           |
 | Breed      | id (PK), name, species id (FK)                                                                                                                                                     |
 | Species    | id (PK), name                                                                                                                                                                      |
-### Entity Relationship Diagram of the DB:
+### Entity Relationship Diagram of the DB (Django Excluded):
 ![](docs/MWB_ERD.png)
 
 ## Getting Started
