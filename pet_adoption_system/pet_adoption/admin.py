@@ -44,7 +44,7 @@ class AdopterAdmin(admin.ModelAdmin):
 @admin.register(Adoption)
 class AdoptionAdmin(admin.ModelAdmin):
     list_display = ("id", "pet", "adopter", "staff", "status", "request_date", "adoption_date")
-    list_filter = ("status", "request_date")
+    list_filter = ("status", "pet__shelter", "request_date")
     search_fields = ("pet__name", "adopter__first_name", "adopter__last_name")
 
     def save_model(self, request, obj, form, change):
