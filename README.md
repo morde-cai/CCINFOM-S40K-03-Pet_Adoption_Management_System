@@ -60,13 +60,14 @@ Each of the main records supports the standard record management functions:
 ### New Adoption
 - Paginated list of all available pets, filterable by shelter.
 - Adopt a pet from the list, leading to an adoption form page.
-- Form to register an adoption by adopter (search-filtered drop-down list), staff member, request date, adoption date (optional), and status.
-- Only pets currently in a shelter can be selected, and a pet with an active (approved) request is rejected. 
+- Form to register an adoption by adopter (searchable drop-down list), staff member (searchable drop-down list), request date, adoption date (optional), and status.
+- Only pets currently in a shelter can be selected, and a pet with an active (approved) request is rejected.
+- If there is an existing active request (pending or approved), a duplicate adoption cannot be made, unless the previous request was rejected (re-applying) or completed (the pet was returned).
 - Only active staff can be assigned.
 - Completing an adoption automatically marks the pet as adopted.
 
 ### Adoptions
-- Paginated list of all adoption records, filterable by status, staff, and adoption date.
+- Paginated list of all adoption records, filterable by status, staff (searchable drop-down list), and adoption date.
 - Edit an adoption's status and adoption date. The pet's status updates with it: completed means adopted, anything else returns the pet to in-shelter.
 
 ### Reports
