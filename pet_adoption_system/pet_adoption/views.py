@@ -168,7 +168,7 @@ def new_adoption_list(request):
     if filter_search:
         pets = pets.filter(name__icontains=filter_search)
 
-    # Use PK to break ties 
+    # Sort, use PK to break ties 
     pets = pets.order_by("name", "pk")
 
     paginator = Paginator(pets, PAGE_SIZE)
@@ -273,12 +273,16 @@ def adoption_list(request):
     adoptions = Adoption.objects.select_related(
         "pet", "pet__shelter", "adopter", "staff"
     ).all()
+
+    shelter_choices = Shelter.objects.order_by("shelter_name")
+    adoption_choices = AdoptionStatus.choices
     
     selected_status = request.GET.get("status", "")
     selected_staff = request.GET.get("staff", "")
     selected_date = request.GET.get("adoption_date", "")
+    selected_shelter = request.GET.get("shelter", "")
 
-    if selected_status in dict(AdoptionStatus.choices):
+    if selected_status in dict(adoption_choices):
         adoptions = adoptions.filter(status=selected_status)
     elif selected_status:
         selected_status = ""
@@ -295,6 +299,11 @@ def adoption_list(request):
             adoptions = adoptions.filter(adoption_date=selected_date)
         except ValueError:
             selected_date = ""
+
+    if selected_shelter:
+        adoptions = adoptions.filter(pet__shelter=selected_shelter)
+    elif selected_shelter:
+        selected_shelter = ""
 
     staff_members = Staff.objects.all().order_by(
         "first_name", "last_name"
@@ -313,10 +322,12 @@ def adoption_list(request):
         "adoptions": page_obj,
         "querystring": params.urlencode(),
         "staff_members": staff_members,
-        "statuses": AdoptionStatus.choices,
+        "statuses": adoption_choices,
+        "shelters": shelter_choices,
         "selected_status": selected_status,
         "selected_staff": selected_staff,
         "selected_date": selected_date,
+        "selected_shelter": selected_shelter,
     })
 
 def adoption_edit(request, pk):
