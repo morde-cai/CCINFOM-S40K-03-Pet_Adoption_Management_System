@@ -64,6 +64,7 @@
             <thead>
                 <tr>
                     <th>Adoption ID</th>
+                    <th>Pet ID</th>
                     <th>Pet</th>
                     <th>Shelter</th>
                     <th>Adopter</th>
@@ -79,6 +80,7 @@
                 {% for adoption in adoptions %}
                 <tr>
                     <td>{{ adoption.pk }}</td>
+                    <td>{{ adoption.pet.id }}</td>
                     <td>{{ adoption.pet.name }}</td>
                     <td>{{ adoption.pet.shelter.shelter_name }}</td>
                     <td>{{ adoption.adopter }}</td>
