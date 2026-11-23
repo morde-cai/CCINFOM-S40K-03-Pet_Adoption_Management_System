@@ -185,3 +185,14 @@ class Adoption(models.Model):
             ).exclude(pk=self.pk)
             if clash.exists():
                 raise ValidationError("This pet already has an active adoption.")
+        
+        # Same adopter can't have two open requests for the same pet, with the exception
+        # of rejected (re-applying) and completed (pet was somehow returned).
+        if (self.pet_id and self.adopter_id and self.status in (AdoptionStatus.PENDING, AdoptionStatus.APPROVED)):
+            duplicate = Adoption.objects.filter(
+                pet_id=self.pet_id,
+                adopter_id=self.adopter_id,
+                status__in=(AdoptionStatus.PENDING, AdoptionStatus.APPROVED),
+            ).exclude(pk=self.pk)
+            if duplicate.exists():
+                raise ValidationError("This adopter already has an open request for this pet.")
