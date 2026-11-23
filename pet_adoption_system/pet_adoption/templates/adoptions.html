@@ -25,14 +25,14 @@
         </div>
 
         <!-- Staff Filter -->
-        <div>
-            <label for="staff" class="form-label">Staff</label>
-            <select name="staff" id="staff" class="form-select">
+        <div class="col-12 col-md-4 col-lg-3">
+            <label for="staffSelect" class="form-label">Staff</label>
+            <select name="staff" id="staffSelect" class="form-select">
                 <option value="">All Staff</option>
                 {% for member in staff_members %}
-                <option value="{{ member.pk }}"
-                    {% if selected_staff == member.pk|stringformat:"s" %}selected{% endif %}>
-                    #{{ member.id }} - {{ member.first_name }} {{ member.last_name }}
+                <option value="{{ member.id }}"
+                    {% if selected_staff == member.id|stringformat:"s" %}selected{% endif %}>
+                    #{{ member.id }} - {{ member }}
                 </option>
                 {% endfor %}
             </select>
@@ -130,4 +130,16 @@
 
     {% include "_pagination.html" with page_obj=adoptions %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Type-to-search dropdown
+    new TomSelect('#staffSelect', {
+        create: false,
+        maxOptions: null,
+        placeholder: 'Type to search staff',
+        searchField: ['text']
+    });
+</script>
 {% endblock %}
