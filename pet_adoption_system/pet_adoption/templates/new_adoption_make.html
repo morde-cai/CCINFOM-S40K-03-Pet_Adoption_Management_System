@@ -61,7 +61,7 @@
                 {% for adopter in adopters %}
                 <option value="{{ adopter.id }}"
                     {% if form.adopter == adopter.id|stringformat:"s" %}selected{% endif %}>
-                    {{ adopter }}
+                    #{{adopter.id}} - {{ adopter }}
                 </option>
                 {% endfor %}
             </select>
@@ -75,7 +75,7 @@
                 {% for member in staff_members %}
                 <option value="{{ member.id }}"
                     {% if form.staff == member.id|stringformat:"s" %}selected{% endif %}>
-                    {{ member }}
+                    #{{member.id}} - {{ member }}
                 </option>
                 {% endfor %}
             </select>
