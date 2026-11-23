@@ -47,11 +47,13 @@
     <h2 class="h6 fw-bold mb-4">Adoption Information</h2>
 
     <form method="POST">
+        <!-- Error Message -->
         {% csrf_token %}
         {% if error %}
         <div class="alert alert-danger">{{ error }}</div>
         {% endif %}
 
+        <!-- Adopter List -->
         <div class="mb-3">
             <label for="adopterSelect" class="form-label">Adopter</label>
             <select name="adopter" id="adopterSelect" class="form-select">
@@ -65,9 +67,10 @@
             </select>
         </div>
 
+        <!-- Staff List -->
         <div class="mb-3">
-            <label class="form-label">Staff</label>
-            <select name="staff" class="form-select" required>
+            <label for="staffSelect" class="form-label">Staff</label>
+            <select name="staff" id="staffSelect" class="form-select">
                 <option value="">Select Staff</option>
                 {% for member in staff_members %}
                 <option value="{{ member.id }}"
@@ -112,11 +115,17 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
-    // Type-to-search Adopter dropdown
+    // Type-to-search dropdown
     new TomSelect('#adopterSelect', {
         create: false,
         maxOptions: null,
-        placeholder: 'Type to search adopters',
+        placeholder: 'Type to search adopter',
+        searchField: ['text']
+    });
+    new TomSelect('#staffSelect', {
+        create: false,
+        maxOptions: null,
+        placeholder: 'Type to search staff',
         searchField: ['text']
     });
 </script>
